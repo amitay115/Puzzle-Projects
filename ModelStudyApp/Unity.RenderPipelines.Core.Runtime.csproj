@@ -60,14 +60,14 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Lighting/ProbeVolume/ProbeVolumeAsset.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Utilities/BitArray.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Lighting/ProbeVolume/ProbeReferenceVolume.Debug.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Common/DynamicResolutionHandler.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/XR/XRLayout.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Common/DynamicResolutionHandler.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Common/CommonStructs.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Utilities/DelegateUtility.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Utilities/TextureCurve.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/XR/XRSystem.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/RenderGraph/RenderGraph.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/LookDev/IDataProvider.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/RenderGraph/RenderGraph.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerUIntField.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/IDebugDisplaySettingsPanel.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerVector2.cs" />
@@ -89,8 +89,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Common/ConstantBuffer.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/XR/XRGraphicsAutomatedTests.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Textures/RTHandles.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Volume/VolumeComponent.EditorOnly.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerField.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Volume/VolumeComponent.EditorOnly.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Inputs/InputRegistering.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/IVolumeDebugSettings.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerWidget.cs" />
@@ -157,13 +157,13 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Common/RemoveRange.Extensions.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/RenderPipeline/IVolumetricCloud.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/DebugUI.Panel.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Camera/CameraSwitcher.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Lighting/ProbeVolume/ProbeReferenceVolumeProfile.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Textures/Texture2DAtlasDynamic.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Camera/CameraSwitcher.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/DebugFrameTiming.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Utilities/ColorUtils.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerObjectPopupField.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerFoldout.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerObjectPopupField.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Lighting/ProbeVolume/ProbeVolume.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/Debugging/Prefabs/Scripts/DebugUIHandlerMessageBox.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Runtime/XR/XRBuiltinShaderConstants.cs" />
@@ -488,8 +488,17 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.TextureAssets">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.YamlDotNet">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="ReportGeneratorMerged">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Antlr3.Runtime">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Newtonsoft.Json">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/log4netPlastic.dll</HintPath>
@@ -500,20 +509,11 @@
     <Reference Include="unityplastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/unityplastic.dll</HintPath>
     </Reference>
-    <Reference Include="ReportGeneratorMerged">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.YamlDotNet">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Antlr3.Runtime">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Newtonsoft.Json">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.TextureAssets">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/NetStandard/ref/2.1.0/netstandard.dll</HintPath>

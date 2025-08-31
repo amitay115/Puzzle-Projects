@@ -44,8 +44,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/UniversalAdditionalCameraDataEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShaderGraph/Targets/SpriteSubTargetUtility.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/RendererFeatures/DecalRendererFeatureEditor.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditorTool/PathEditorToolExtensions.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/AssetPostProcessors/ModelPostProcessor.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditorTool/PathEditorToolExtensions.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShaderGraph/Targets/UniversalSpriteCustomLitSubTarget.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/UniversalAdditionalLightDataEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/RendererFeatures/NewRendererFeatureDropdownItem.cs" />
@@ -60,10 +60,10 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/GUIFramework/GUIState.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/UniversalRenderPipelineMaterialUpgrader.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Converter/InitializeConverterContext.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/Converter/UpgradeURP2DAssetsContainer.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/UniversalRenderPipelineAssetEditor.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/GUIFramework/GUIAction.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGUI/ShaderGraphLitGUI.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/Converter/UpgradeURP2DAssetsContainer.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/GUIFramework/GUIAction.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/Selection/ISelector.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Overrides/LiftGammaGainEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/CompositeShadowCaster2DEditor.cs" />
@@ -75,8 +75,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/VFXGraph/VFXURPLitMeshOutput.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Converter/ConverterItemInfo.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/GUIFramework/Control.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditablePath/ControlPoint.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Camera/UniversalRenderPipelineCameraUI.Rendering.Drawers.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditablePath/ControlPoint.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/Renderer2DDataEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Decal/DisplacableRectHandles.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/AssetCallbacks/CreateFullscreenShaderGraph.cs" />
@@ -135,8 +135,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditablePath/EditablePathExtensions.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/Targets/UniversalUnlitSubTarget.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Decal/CreateDecalProjector.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/RendererFeatures/ScreenSpaceShadowsEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/RendererDataPatcher.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/RendererFeatures/ScreenSpaceShadowsEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Decal/ProjectedTransform.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGUI/ParticleGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/AssetCallbacks/CreateLitShaderGraph.cs" />
@@ -170,8 +170,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Lighting/UniversalRenderPipelineSerializedLight.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/Includes/DecalMeshBiasTypeEnum.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/RenderStateDataEditor.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/Renderer2DAnalytics.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/UniversalAnalytics.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/Renderer2DAnalytics.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Lighting/UniversalRenderPipelineLightUI.Skin.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Converter/ConversionIndexers.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/AssetPostProcessors/ThreeDSMaterialDescriptionPostprocessor.cs" />
@@ -221,8 +221,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/VFXGraph/VFXAbstractParticleURPLitOutput.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/VFXGraph/VFXShaderGraphGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Converter/Converters.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/UniversalBlockFields.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditorTool/PathComponentEditor.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/UniversalBlockFields.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGraph/Targets/UniversalFullscreenSubTarget.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Decal/CreateDecalShaderGraph.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Overrides/TonemappingEditor.cs" />
@@ -245,8 +245,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/AssetPostProcessors/FBXMaterialDescriptionPreprocessor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Overrides/FilmGrainEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShaderGraph/AssetCallbacks/CreateSpriteLitShaderGraph.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Camera/UniversalRenderPipelineCameraUI.Drawers.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/ShaderGUI/Shaders/UnlitShader.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/Camera/UniversalRenderPipelineCameraUI.Drawers.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditorTool/PathEditorTool.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/2D/ShapeEditor/EditablePath/EditablePath.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.universal@14.0.7/Editor/VFXGraph/VFXURPSubOutput.cs" />
@@ -588,8 +588,17 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.TextureAssets">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.YamlDotNet">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="ReportGeneratorMerged">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Antlr3.Runtime">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Newtonsoft.Json">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/log4netPlastic.dll</HintPath>
@@ -600,20 +609,11 @@
     <Reference Include="unityplastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/unityplastic.dll</HintPath>
     </Reference>
-    <Reference Include="ReportGeneratorMerged">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.YamlDotNet">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Antlr3.Runtime">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Newtonsoft.Json">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.TextureAssets">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
