@@ -10,7 +10,7 @@ Shader "Custom/UnlitOutlineURP"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Geometry+10" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent+10" }
         LOD 100
 
         Pass

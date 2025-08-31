@@ -121,4 +121,6 @@ public class HoverHighlightManager : MonoBehaviour
         if (hh == null) hh = p.gameObject.AddComponent<Highlightable>();
         return hh;
     }
+    public void ClearSelection() => SetSelected(null);
+    public void Select(Highlightable h) => SetSelected(h);
 }
