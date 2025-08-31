@@ -84,8 +84,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/ICoreRenderPipelinePreferencesProvider.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/ShaderStripping/ShaderStrippingWatcher.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Volume/SerializedDataParameter.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Volume/VolumeEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Lighting/ProbeVolume/ProbeVolumeBakingWindow.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Volume/VolumeEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Gizmo/HierarchicalBox.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Material/MaterialHeaderScope.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/RemoveAdditionalDataUtils.cs" />
@@ -120,8 +120,8 @@
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Camera/CameraUI.Skin.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/CoreEditorStyles.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Volume/VolumeProfileEditor.cs" />
-     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/RenderPipeline/RenderPipelineGlobalSettingsUI.Drawers.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Material/MaterialHeaderScopeList.cs" />
+     <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/RenderPipeline/RenderPipelineGlobalSettingsUI.Drawers.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Volume/VolumeComponentListEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/RenderPipeline/RenderPipelineResourcesEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.render-pipelines.core@14.0.7/Editor/Debugging/DebugUIDrawer.Builtins.cs" />
@@ -462,17 +462,8 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.YamlDotNet">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="ReportGeneratorMerged">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Antlr3.Runtime">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Newtonsoft.Json">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.TextureAssets">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/log4netPlastic.dll</HintPath>
@@ -483,11 +474,20 @@
     <Reference Include="unityplastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/unityplastic.dll</HintPath>
     </Reference>
+    <Reference Include="ReportGeneratorMerged">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.TextureAssets">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.YamlDotNet">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Antlr3.Runtime">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Newtonsoft.Json">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>

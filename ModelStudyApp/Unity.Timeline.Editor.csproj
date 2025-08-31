@@ -104,8 +104,8 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/ObjectExtension.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Snapping/IAttractable.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/inspectors/MarkerInspector.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/DirectorStyles.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/TimelineTreeViewGUI.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/DirectorStyles.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Actions/MarkerAction.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/Clipboard.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/TimelineKeyboardNavigation.cs" />
@@ -114,8 +114,8 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Sequence/TrackZoom.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/BindingSelector.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineNavigator.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Drawers/AnimationTrackDrawer.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/DisplayNameHelper.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Drawers/AnimationTrackDrawer.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/ObjectReferenceField.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Actions/TrackActions.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineWindow_TrackGui.cs" />
@@ -155,8 +155,8 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/TrackGui/TimelineTrackErrorGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/TrackGui/TimelineGroupGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/AnimationClipExtensions.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Utils/EditModeUtils.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/TrackModifier.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Utils/EditModeUtils.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/StyleNormalColorOverride.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/ViewModel/TimelineAssetViewModel.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/MenuPriority.cs" />
@@ -166,10 +166,10 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Drawers/InfiniteTrackDrawer.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/KeyTraverser.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Trim/TrimItemModeRipple.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineWindow_HeaderGui.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/ManipulationsClips.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/AnimationClipCurveCache.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/ViewModel/ScriptableObjectViewPrefs.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineWindow_HeaderGui.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/Scopes/IndentLevelScope.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Undo/UndoExtensions.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Extensions/AnimationTrackExtensions.cs" />
@@ -184,19 +184,19 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineMarkerHeaderGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/Modes/TimelineAssetEditionMode.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/AnimationTrackActions.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Drawers/Layers/ItemsLayer.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Recording/TimelineRecording_PlayableAsset.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/BindingTreeViewDataSource.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Drawers/Layers/ItemsLayer.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Signals/TreeView/SignalReceiverItem.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Recording/TimelineRecording_Monobehaviour.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/CurveDataSource.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/CustomEditors/MarkerEditor.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Items/ItemsUtils.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Actions/IAction.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/inspectors/TimelinePreferences.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Items/ItemsUtils.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/ItemGui/TimelineMarkerGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Actions/TimelineAction.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineWindow_TimeArea.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Actions/IAction.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/TrackGui/TimelineTrackGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Animation/CurvesProxy.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/Drawers/Layers/MarkersLayer.cs" />
@@ -245,16 +245,16 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/PropertyCollector.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/inspectors/ClipInspector/ClipInspectorCurveEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Items/ClipItem.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Items/ItemsPerTrack.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/BreadcrumbDrawer.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Items/ItemsPerTrack.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Actions/IMenuName.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Undo/UndoScope.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Trim/TrimItemModeReplace.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Recording/TimelineRecordingContextualResponder.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/treeview/ItemGui/TimelineMarkerClusterGUI.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/TypeUtility.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Audio/AudioTrackInspector.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/MarkerModifier.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Audio/AudioTrackInspector.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Utils/EditModeRippleUtils.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/TimeReferenceUtility.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/TrackResourceCache.cs" />
@@ -301,8 +301,8 @@
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Signals/SignalAssetInspector.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineWindow_PlayRange.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/inspectors/TimelineProjectSettings.cs" />
-     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Activation/ActivationTrackEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Utilities/Scopes/GUIViewportScope.cs" />
+     <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Activation/ActivationTrackEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Signals/SignalEmitterEditor.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Manipulators/Utils/EditModeGUIUtils.cs" />
      <Compile Include="Library/PackageCache/com.unity.timeline@1.7.4/Editor/Window/TimelineWindow_Gui.cs" />
@@ -575,17 +575,8 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.YamlDotNet">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="ReportGeneratorMerged">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Antlr3.Runtime">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Plastic.Newtonsoft.Json">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.TextureAssets">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/log4netPlastic.dll</HintPath>
@@ -596,11 +587,20 @@
     <Reference Include="unityplastic">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/unityplastic.dll</HintPath>
     </Reference>
+    <Reference Include="ReportGeneratorMerged">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.testtools.codecoverage@1.2.3/lib/ReportGenerator/ReportGeneratorMerged.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualScripting.TextureAssets">
-        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
+    <Reference Include="Unity.VisualScripting.YamlDotNet">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.visualscripting@1.8.0/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Antlr3.Runtime">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Plastic.Newtonsoft.Json">
+        <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.collab-proxy@2.9.2/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
         <HintPath>/Users/amitayamran/Documents/GitHub/Puzzle-Projects/ModelStudyApp/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>

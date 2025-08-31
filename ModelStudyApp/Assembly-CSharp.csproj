@@ -40,10 +40,10 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets/Scenes/Scripts/Highlightable.cs" />
      <Compile Include="Assets/Scenes/Scripts/OrbitCameraRig.cs" />
      <Compile Include="Assets/Scenes/Scripts/HighlightGroup.cs" />
      <Compile Include="Assets/Scenes/Scripts/HoverHighlightManager.cs" />
-     <Compile Include="Assets/Scenes/Scripts/Highlightable.cs" />
      <None Include="Assets/Shaders/UnlitOutlineURP.shader" />
     <Reference Include="UnityEngine">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.0f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -748,13 +748,13 @@
       <Project>{407e116b-1f15-4051-2063-e7b24c163a9d}</Project>
       <Name>Unity.RenderPipeline.Universal.ShaderLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Timeline.csproj">
-      <Project>{378b9ecb-20c4-64b1-dd3a-590123296ac7}</Project>
-      <Name>Unity.Timeline</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Mono.Reflection.csproj">
       <Project>{2ecff5ca-cb95-7359-59f1-f0965bf18789}</Project>
       <Name>Unity.TestTools.CodeCoverage.Editor.OpenCover.Mono.Reflection</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Timeline.csproj">
+      <Project>{378b9ecb-20c4-64b1-dd3a-590123296ac7}</Project>
+      <Name>Unity.Timeline</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.SettingsProvider.Editor.csproj">
       <Project>{58f15b13-7aa9-f820-4dd2-f0bd4cfa63ae}</Project>
@@ -768,10 +768,6 @@
       <Project>{93708470-e392-6b7d-8c82-811cb0cb4395}</Project>
       <Name>Unity.RenderPipelines.Core.ShaderLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.TestTools.CodeCoverage.Editor.csproj">
-      <Project>{83ee9825-1326-e568-57e9-acc2445616ff}</Project>
-      <Name>Unity.TestTools.CodeCoverage.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Model.csproj">
       <Project>{16fb4109-9efd-d83e-ea65-2ac726123329}</Project>
       <Name>Unity.TestTools.CodeCoverage.Editor.OpenCover.Model</Name>
@@ -779,6 +775,10 @@
     <ProjectReference Include="Unity.PlasticSCM.Editor.csproj">
       <Project>{6803eeb0-16fd-726a-0c7c-30bf470af04a}</Project>
       <Name>Unity.PlasticSCM.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TestTools.CodeCoverage.Editor.csproj">
+      <Project>{83ee9825-1326-e568-57e9-acc2445616ff}</Project>
+      <Name>Unity.TestTools.CodeCoverage.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Editor.csproj">
       <Project>{0ca9c1d7-0cc3-e67c-7f7e-f0bc97fbdce1}</Project>
@@ -808,13 +808,13 @@
       <Project>{4b47cf18-e71e-1937-44a6-136bf7bb7f1d}</Project>
       <Name>Unity.RenderPipelines.Universal.Shaders</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.State.csproj">
-      <Project>{ff214caf-f8e0-ea33-4407-bf8e1574ef82}</Project>
-      <Name>Unity.VisualScripting.State</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.VSCode.Editor.csproj">
       <Project>{fe4aea2e-5e95-58d4-201b-aaa06f94e536}</Project>
       <Name>Unity.VSCode.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.VisualScripting.State.csproj">
+      <Project>{ff214caf-f8e0-ea33-4407-bf8e1574ef82}</Project>
+      <Name>Unity.VisualScripting.State</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.RenderPipelines.Universal.Editor.csproj">
       <Project>{5fa45aad-9232-645a-7436-4ba1de9e2e50}</Project>
