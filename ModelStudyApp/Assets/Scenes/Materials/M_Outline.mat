@@ -102,7 +102,7 @@ Material:
     - _HDRIntensity: 2.5
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _OutlineThickness: 0.03
+    - _OutlineThickness: 0.01
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -113,7 +113,7 @@ Material:
     - _SrcBlendAlpha: 1
     - _Surface: 0
     - _WorkflowMode: 1
-    - _ZBias: -3
+    - _ZBias: -1.71
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

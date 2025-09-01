@@ -253,14 +253,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131280820}
-  m_LocalRotation: {x: -0.061575778, y: -0.45917886, z: 0.78509647, w: -0.4110799}
-  m_LocalPosition: {x: -7.62, y: 3.44, z: -1.59}
+  m_LocalRotation: {x: -0.044909857, y: -0.5559935, z: 0.7797215, w: -0.2844095}
+  m_LocalPosition: {x: -7.52, y: 5.91, z: 0.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 634697527}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 50.5, y: -333.8, z: -112.2}
+  m_LocalEulerAnglesHint: {x: 63.2, y: -326.9, z: -119.2}
 --- !u!114 &131280822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,8 +296,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.8998539, b: 0.5492168, a: 1}
-  m_Intensity: 287.6
-  m_Range: 6.845732
+  m_Intensity: 311.6
+  m_Range: 9.3
   m_SpotAngle: 177.04317
   m_InnerSpotAngle: 93.896904
   m_CookieSize: 10
@@ -691,7 +691,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 384151640}
   m_LocalRotation: {x: -0.6835337, y: 0.27678347, z: -0.44997868, w: 0.50367826}
-  m_LocalPosition: {x: -10.21, y: -2.44, z: 3.76}
+  m_LocalPosition: {x: -14.53, y: -2, z: 3.76}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -733,8 +733,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.8998539, b: 0.5492168, a: 1}
-  m_Intensity: 226.67
-  m_Range: 6.845732
+  m_Intensity: 239.19
+  m_Range: 12
   m_SpotAngle: 75.52817
   m_InnerSpotAngle: 69.4057
   m_CookieSize: 10
@@ -980,7 +980,7 @@ Transform:
   - {fileID: 1175616419}
   - {fileID: 384151641}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &670129754
 GameObject:
@@ -1235,7 +1235,7 @@ GameObject:
   - component: {fileID: 832329489}
   - component: {fileID: 832329488}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: UICanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1291,8 +1291,8 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_Camera: {fileID: 963194227}
+  m_PlaneDistance: 3
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -1301,8 +1301,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1865426373
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &832329491
 RectTransform:
@@ -1368,7 +1368,7 @@ Camera:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
-  m_FOVAxisMode: 0
+  m_FOVAxisMode: 1
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
@@ -1386,9 +1386,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
-  field of view: 60
+  field of view: 65
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1484,7 +1484,7 @@ MonoBehaviour:
   maxDistance: 20
   zoomSpeed: 1.2
   zoomWithPlusMinus: 1
-  mouseSensitivity: 0.2
+  mouseSensitivity: 20
   keysSpeedDegPerSec: 90
   invertY: 0
   yMinLimit: -20
@@ -1556,14 +1556,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1016016653}
-  m_LocalRotation: {x: -0.7406174, y: 0.47290224, z: 0.07561316, w: -0.4713089}
-  m_LocalPosition: {x: 5.14, y: 2.12, z: 5.98}
+  m_LocalRotation: {x: -0.73256266, y: 0.4419714, z: -0.06469259, w: -0.51364195}
+  m_LocalPosition: {x: 6.21, y: 0.95, z: 5.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 634697527}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 38.8, y: -494.3, z: -98}
+  m_LocalEulerAnglesHint: {x: 54.07, y: -502.25, z: -98}
 --- !u!114 &1016016655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1599,10 +1599,10 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.8998539, b: 0.5492168, a: 1}
-  m_Intensity: 224.3
-  m_Range: 6.845732
-  m_SpotAngle: 177.04317
-  m_InnerSpotAngle: 133.22015
+  m_Intensity: 158.8
+  m_Range: 6.9
+  m_SpotAngle: 176.1
+  m_InnerSpotAngle: 70.36667
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -1810,7 +1810,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052183101}
   m_LocalRotation: {x: -0.75429773, y: 0.6501841, z: 0.007584118, w: -0.090764366}
-  m_LocalPosition: {x: -1.09, y: 1.91, z: 7.38}
+  m_LocalPosition: {x: -0.51, y: 1.91, z: 8.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1852,8 +1852,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.8998539, b: 0.5492168, a: 1}
-  m_Intensity: 287.6
-  m_Range: 6.845732
+  m_Intensity: 302.12
+  m_Range: 8.8
   m_SpotAngle: 177.04317
   m_InnerSpotAngle: 93.896904
   m_CookieSize: 10
@@ -1915,7 +1915,7 @@ GameObject:
   - component: {fileID: 1153804061}
   - component: {fileID: 1153804060}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: FloorSurface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2006,7 +2006,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1158948872
 GameObject:
@@ -2156,7 +2156,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1175616418}
   m_LocalRotation: {x: -0.63884264, y: 0.58980316, z: -0.4604869, w: -0.1787853}
-  m_LocalPosition: {x: -7.62, y: 3.65, z: 7.8}
+  m_LocalPosition: {x: -7.62, y: 3.65, z: 7.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2198,8 +2198,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.8998539, b: 0.5492168, a: 1}
-  m_Intensity: 287.6
-  m_Range: 6.845732
+  m_Intensity: 304.91
+  m_Range: 8.6
   m_SpotAngle: 177.04317
   m_InnerSpotAngle: 93.896904
   m_CookieSize: 10
@@ -2273,14 +2273,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1380555655}
-  m_LocalRotation: {x: -0.13129944, y: 0.030386776, z: 0.742821, w: -0.6557851}
-  m_LocalPosition: {x: -1.09, y: 1.82, z: -0.96}
+  m_LocalRotation: {x: -0.07925943, y: 0.090596, z: 0.750511, w: -0.6498028}
+  m_LocalPosition: {x: -1.09, y: 3.47, z: -5.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 634697527}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 7.3, y: -373.7, z: -98}
+  m_LocalEulerAnglesHint: {x: -1.89, y: -373.7, z: -98}
 --- !u!114 &1380555657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2316,8 +2316,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.8998539, b: 0.5492168, a: 1}
-  m_Intensity: 287.6
-  m_Range: 6.845732
+  m_Intensity: 285.07
+  m_Range: 13.9
   m_SpotAngle: 177.04317
   m_InnerSpotAngle: 93.896904
   m_CookieSize: 10
@@ -3087,7 +3087,7 @@ Transform:
   - {fileID: 3262450311734212939}
   - {fileID: 1978336810}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &610078938720647241
 Transform:
@@ -4018,7 +4018,6 @@ GameObject:
   - component: {fileID: 649869037552672288}
   - component: {fileID: 1258511873140500407}
   - component: {fileID: 8695971189781146294}
-  - component: {fileID: 8695971189781146296}
   - component: {fileID: 8695971189781146295}
   m_Layer: 7
   m_Name: Ledder_Main.9.mesh
@@ -4817,7 +4816,7 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 258.09637, y: 258.09637, z: 258.09637}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2432686125520734069}
   m_Father: {fileID: 523228052014116960}
@@ -6204,7 +6203,6 @@ GameObject:
   - component: {fileID: 2276154639743371298}
   - component: {fileID: 1953944903996962501}
   - component: {fileID: 3063504379822579419}
-  - component: {fileID: 5637278590668404608}
   - component: {fileID: 5637278590668404607}
   m_Layer: 7
   m_Name: Ledder_Poles.10.mesh
@@ -6234,32 +6232,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0017215114, y: 0.0012995148, z: 0.0030846978}
   m_Center: {x: 0.0064295325, y: -0.0051599494, z: 0.00637143}
---- !u!114 &5637278590668404608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5637278590668404606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b75c6087006a440b6b3a9580d8ac02c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useOutline: 1
-  outlineMaterial: {fileID: 2100000, guid: 01c19c61bc47343029838fabf810f983, type: 2}
-  outlineShellScale: 1
-  hoverColor: {r: 0, g: 1, b: 1, a: 1}
-  hoverThickness: 0.006
-  hoverAlpha: 1
-  hoverZBias: -1.5
-  selectedColor: {r: 1, g: 0.65, b: 0, a: 1}
-  selectedThickness: 0.008
-  selectedAlpha: 1
-  selectedZBias: -1.5
-  hoverScale: 1
-  scaleInLerp: 12
-  scaleOutLerp: 10
 --- !u!33 &5644632579126899181
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -8600,32 +8572,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0019350534, y: 0.004023666, z: 0.0049682125}
   m_Center: {x: 0.006430207, y: -0.0044025034, z: 0.0035297824}
---- !u!114 &8695971189781146296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2119958824368194059}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b75c6087006a440b6b3a9580d8ac02c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useOutline: 1
-  outlineMaterial: {fileID: 2100000, guid: 01c19c61bc47343029838fabf810f983, type: 2}
-  outlineShellScale: 1
-  hoverColor: {r: 0, g: 1, b: 1, a: 1}
-  hoverThickness: 0.006
-  hoverAlpha: 1
-  hoverZBias: -1.5
-  selectedColor: {r: 1, g: 0.65, b: 0, a: 1}
-  selectedThickness: 0.008
-  selectedAlpha: 1
-  selectedZBias: -1.5
-  hoverScale: 1
-  scaleInLerp: 12
-  scaleOutLerp: 10
 --- !u!4 &8710614142213005757
 Transform:
   m_ObjectHideFlags: 0
