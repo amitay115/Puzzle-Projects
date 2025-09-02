@@ -1,126 +1,134 @@
+// HoverHighlightManager.cs
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(Camera))]
 public class HoverHighlightManager : MonoBehaviour
 {
-    [Header("Scope")]
-    public Transform modelRoot;          // אופציונלי: שורש המודל לסינון
-    public LayerMask hitLayers = ~0;
-    public float maxDistance = 1000f;
-
-    [Header("Input / UI")]
+    [Header("Picking")]
+    public Camera pickCamera;                 // אם ריק נשתמש ב-Camera.main
+    public LayerMask pickLayers = ~0;         // אילו שכבות ניתנות לבחירה
+    public float rayMaxDistance = 500f;
     public bool blockWhenPointerOverUI = true;
-    public int selectMouseButton = 0;    // 0=שמאלי
-    public KeyCode clearSelectionKey = KeyCode.Escape;
 
-    Camera _cam;
-    Highlightable _currentHover;
-    Highlightable _currentSelected;
+    [Header("Mouse")]
+    public int selectMouseButton = 0;         // 0=שמאלי
 
-    // לשימוש ה-UI/קוד חיצוני
-    public System.Action<Highlightable> OnSelectionChanged;
+    // האירוע למאזינים (UI וכו')
+    public event Action<Highlightable> OnSelectionChanged;
+
+    // מצב פנימי
+    Highlightable _hover;     // מה שמתחת לסמן כרגע
+    Highlightable _current;   // מה שנבחר בפועל
+
+    // API חיצוני
+    public Highlightable GetSelected() => _current;
 
     void Awake()
     {
-        _cam = GetComponent<Camera>();
+        if (!pickCamera) pickCamera = Camera.main;
     }
 
     void Update()
     {
-        bool overUI = blockWhenPointerOverUI &&
-                      EventSystem.current != null &&
-                      EventSystem.current.IsPointerOverGameObject();
+        // 1) עדכון Hover
+        UpdateHover();
 
-        UpdateHover(overUI);
-        UpdateSelection(overUI);
+        // 2) בחירה בעכבר (לחיצה)
+        bool pointerOnUI = blockWhenPointerOverUI &&
+                           EventSystem.current != null &&
+                           EventSystem.current.IsPointerOverGameObject();
+
+        if (!pointerOnUI && Input.GetMouseButtonDown(selectMouseButton))
+        {
+            // בחר את מה שמתחת לסמן (אם יש)
+            Select(_hover);
+        }
+
+        // 3) ניקוי בחירה (Esc)
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ClearSelection();
+        }
     }
 
-    void UpdateHover(bool overUI)
+    void UpdateHover()
     {
-        if (overUI)
-        {
-            SetHover(null);
-            return;
-        }
+        Highlightable found = RaycastForHighlightable();
 
-        var ray = _cam.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, hitLayers, QueryTriggerInteraction.Ignore))
-        {
-            var h = FindOrAddHighlightable(hit.transform);
-            SetHover(h);
-        }
-        else
-        {
-            SetHover(null);
-        }
+        if (_hover == found) return;
+
+        // כבה hover קודם
+        if (_hover) SafeSetHover(_hover, false);
+
+        _hover = found;
+
+        // הדלק hover חדש (לא אם הוא כבר נבחר? לרוב כן – משאירים hover גם על נבחר)
+        if (_hover) SafeSetHover(_hover, true);
     }
 
-    void UpdateSelection(bool overUI)
+    Highlightable RaycastForHighlightable()
     {
-        if (Input.GetKeyDown(clearSelectionKey))
-        {
-            SetSelected(null);
-            return;
-        }
+        if (!pickCamera) return null;
 
-        if (!overUI && Input.GetMouseButtonDown(selectMouseButton))
+        var ray = pickCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, rayMaxDistance, pickLayers, QueryTriggerInteraction.Ignore))
         {
-            SetSelected(_currentHover); // בוחר את מה שמתחת לסמן כרגע
+            // מחפש Highlightable על האובייקט או אחד מההורים
+            return hit.collider.GetComponentInParent<Highlightable>();
         }
+        return null;
     }
 
-    void SetHover(Highlightable h)
+    /// <summary>
+    /// בחירה ממקור UI (לחיצה על פריט בתפריט)
+    /// </summary>
+    public void SelectFromUI(Highlightable h)
     {
-        if (_currentHover == h) return;
-        if (_currentHover != null) _currentHover.SetHover(false);
-        _currentHover = h;
-        if (_currentHover != null) _currentHover.SetHover(true);
+        Select(h);
     }
 
-    void SetSelected(Highlightable h)
+    /// <summary>
+    /// בחירה כללית (עכבר/תפריט)
+    /// </summary>
+    public void Select(Highlightable h)
     {
-        if (_currentSelected == h) return;
+        if (_current == h) return;
 
-        if (_currentSelected != null)
-            _currentSelected.SetSelected(false);
+        // נקה נבחר קודם
+        if (_current) SafeSetSelected(_current, false);
 
-        _currentSelected = h;
+        _current = h;
 
-        if (_currentSelected != null)
-            _currentSelected.SetSelected(true);
+        // הדלק נבחר חדש
+        if (_current) SafeSetSelected(_current, true);
 
-        OnSelectionChanged?.Invoke(_currentSelected);
+        // עדכן UI/מאזינים
+        OnSelectionChanged?.Invoke(_current);
     }
 
-    public Highlightable GetSelected() => _currentSelected;
-
-    // ——— עזר: מאתר Highlightable נכון לאובייקט שנפגענו בו ———
-    Highlightable FindOrAddHighlightable(Transform hit)
+    public void ClearSelection()
     {
-        // קודם נעלה באבות עד modelRoot (אם הוגדר), ונעדיף Highlightable על אב
-        Transform p = hit;
-        while (p != null && (modelRoot == null || p != modelRoot.parent))
+        if (_current)
         {
-            var h = p.GetComponent<Highlightable>();
-            if (h != null) return h;
-            p = p.parent;
+            SafeSetSelected(_current, false);
+            _current = null;
+            OnSelectionChanged?.Invoke(null);
         }
-
-        // אחרת נבחר יחידה הגיונית (אב שיש עליו Renderer/Filter), ונוסיף עליו Highlightable
-        p = hit;
-        while (p != null && (modelRoot == null || p != modelRoot.parent))
-        {
-            if (p.GetComponent<MeshRenderer>() != null || p.GetComponent<MeshFilter>() != null)
-                break;
-            p = p.parent;
-        }
-        if (p == null) p = hit;
-
-        var hh = p.GetComponent<Highlightable>();
-        if (hh == null) hh = p.gameObject.AddComponent<Highlightable>();
-        return hh;
     }
-    public void ClearSelection() => SetSelected(null);
-    public void Select(Highlightable h) => SetSelected(h);
+
+    // === עוזרים בטוחים: קוראים למתודות אם קיימות ===
+    void SafeSetHover(Highlightable h, bool on)
+    {
+        if (!h) return;
+        // נניח שב-Highlightable קיימת SetHover(bool). אם קוראים לה בשם אחר, שנה כאן.
+        try { h.SetHover(on); } catch { /* התעלם אם אין */ }
+    }
+
+    void SafeSetSelected(Highlightable h, bool on)
+    {
+        if (!h) return;
+        // נניח שב-Highlightable קיימת SetSelected(bool). אם השם שונה – עדכן כאן.
+        try { h.SetSelected(on); } catch { /* התעלם אם אין */ }
+    }
 }

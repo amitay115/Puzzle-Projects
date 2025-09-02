@@ -13,7 +13,8 @@ public class UISelectionPanel : MonoBehaviour
     Transform _originalOrbitTarget;           // נשמור את הטארגט המקורי
     Transform _isoPivot;                      // פיווט של האיזולייט
 
-    
+    [SerializeField] private Transform modelRoot; // גרור באינספקטור את root של המודל (למשל spyderMR_example)
+
     [Header("Isolate Placement")]
     public bool snapAboveFloor = true;
     public float floorY = 0f;          // גובה הרצפה שלך (לרוב 0)
@@ -53,7 +54,7 @@ public class UISelectionPanel : MonoBehaviour
     {
         if (!manager) manager = Camera.main.GetComponent<HoverHighlightManager>();
 
-        if (manager && !_originalRoot) _originalRoot = manager.modelRoot;
+        if (manager && !_originalRoot) _originalRoot = modelRoot;
 
         if (manager) manager.OnSelectionChanged += OnSelectionChanged;
 
@@ -100,7 +101,7 @@ public class UISelectionPanel : MonoBehaviour
             _isoPivot = null;
 
             if (_originalRoot) _originalRoot.gameObject.SetActive(true);
-            if (manager) manager.modelRoot = _originalRoot;
+            if (manager) modelRoot = _originalRoot;
 
             // החזר את טארגט המצלמה המקורי
             if (orbitRig) orbitRig.target = _originalOrbitTarget;
@@ -267,7 +268,7 @@ public class UISelectionPanel : MonoBehaviour
 
 
         // 3) אחרי כל ההזזות – מיקום מצלמה לראות טוב
-        manager.modelRoot = container;
+        modelRoot = container;
         if (orbitRig != null)
         {
             orbitRig.target = _isoPivot;
@@ -281,7 +282,7 @@ public class UISelectionPanel : MonoBehaviour
 
 
         // 8) עדכן את המנהל והמצלמה
-        manager.modelRoot = container;
+        modelRoot = container;
 
         if (orbitRig != null)
         {
