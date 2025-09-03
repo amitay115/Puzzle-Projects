@@ -45,8 +45,10 @@
      <Compile Include="Assets/Scenes/Scripts/UISelectionPanel.cs" />
      <Compile Include="Assets/Scenes/Scripts/HighlightGroup.cs" />
      <Compile Include="Assets/Scenes/Scripts/SelectionInfoPanel.cs" />
+     <Compile Include="Assets/Scenes/Scripts/MainMenuController.cs" />
      <Compile Include="Assets/Scenes/Scripts/HoverHighlightManager.cs" />
      <Compile Include="Assets/Scenes/Scripts/ModelMenuItem.cs" />
+     <Compile Include="Assets/Scenes/Scripts/SceneLoader.cs" />
      <Compile Include="Assets/Scenes/Scripts/ModelMenuPanel.cs" />
      <Compile Include="Assets/Scenes/Scripts/Highlightable.cs" />
      <None Include="Assets/TextMesh Pro/Shaders/TMPro.cginc" />
