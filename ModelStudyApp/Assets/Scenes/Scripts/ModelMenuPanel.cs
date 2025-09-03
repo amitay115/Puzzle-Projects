@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
 public class ModelMenuPanel : MonoBehaviour
 {
     [Header("Refs")]
@@ -13,6 +14,14 @@ public class ModelMenuPanel : MonoBehaviour
     public TextMeshProUGUI headerLabel;              // הטקסט של ההדר
     public TextMeshProUGUI iconLabel;                // טקסט קטן "▾/▸"
     public CanvasGroup canvasGroup;                  // של הפאנל
+
+    [Header("Open/Close")]
+    [Range(0.3f, 1f)]
+    public float openMaxScreenFrac = 0.9f;   // עד כמה מהמסך מותר לתיבה למלא
+    
+
+    [Tooltip("RectTransform של ה-Header (אופציונלי). אם לא הוגדר נשתמש ב-closedHeight.")]
+    public RectTransform headerRect;
 
     [Header("Prefabs")]
     public ModelMenuItem itemPrefab;
@@ -88,6 +97,15 @@ public class ModelMenuPanel : MonoBehaviour
             if (!h || !h.gameObject.activeInHierarchy) continue;
 
             var item = Instantiate(itemPrefab, content);
+
+            // לוודא אנקרים לרוחב מלא
+            var rt = (RectTransform)item.transform;
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = new Vector2(1f, 1f);
+            rt.pivot     = new Vector2(0.5f, 1f);
+            rt.offsetMin = new Vector2(0f, rt.offsetMin.y);
+            rt.offsetMax = new Vector2(0f, rt.offsetMax.y);
+
             item.SetText(h.name);
             item.SetSelected(false);
 
@@ -137,11 +155,38 @@ public class ModelMenuPanel : MonoBehaviour
 
     float GetPreferredHeight()
     {
-        if (!content) return 200f;
+        if (!content) return closedHeight + 200f;
+
+        // לעדכן את חישובי ה-Layout לפני מדידה
         LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-        // 56 לערך לגובה Header+Padding, אפשר לכוון
-        return 56f + content.rect.height + 12f;
+
+        float headerH = CalcClosedHeight(); // גובה ההדר
+        float contentPreferred = LayoutUtility.GetPreferredHeight(content); // גובה רשימה “אמיתי”
+
+        // תקרה: לא לחרוג מגובה המסך (לפי openMaxScreenFrac)
+        float cap = Screen.height * openMaxScreenFrac;
+
+        return Mathf.Min(headerH + contentPreferred, cap);
     }
+
+    float CalcClosedHeight()
+    {
+        // אם יש רפרנס ל-Header – חשב גובה מועדף שלו + padding של ה-Panel
+        if (headerRect)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(headerRect);
+            float headerH = LayoutUtility.GetPreferredHeight(headerRect);
+
+            var vlg = GetComponent<VerticalLayoutGroup>();
+            float pad = vlg ? (vlg.padding.top + vlg.padding.bottom) : 0f;
+
+            return Mathf.Ceil(headerH + pad);
+        }
+
+        // אחרת – נשתמש בגובה דיפולטי קבוע
+        return closedHeight;
+    }
+
 
     public void ToggleOpen()
     {

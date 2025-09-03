@@ -104,11 +104,11 @@ public class OrbitCameraRig : MonoBehaviour
         }
 
         var e = transform.rotation.eulerAngles;
-        _targetYaw   = _yaw   = e.y;
+        _targetYaw = _yaw = e.y;
         _targetPitch = _pitch = ClampAngle(e.x, yMinLimit, yMaxLimit);
 
         _targetDist = Mathf.Clamp(distance, minDistance, maxDistance);
-        distance    = _targetDist;
+        distance = _targetDist;
 
         _startYaw = _targetYaw;
         _startPitch = _targetPitch;
@@ -139,37 +139,39 @@ public class OrbitCameraRig : MonoBehaviour
         if (enableResetKey && Input.GetKeyDown(resetKey))
             ResetView();
 
-        bool overUI = lockWhenOverUI &&
-                      EventSystem.current != null &&
-                      EventSystem.current.IsPointerOverGameObject();
+        bool overUI = IsPointerOverUI();
+        float scroll = 0f;
+        if (!overUI)
+        {
+            scroll = Input.mouseScrollDelta.y;   // גלגלת פועלת רק אם לא על UI
+        }
 
         // Mouse drag (button held & not over UI)
         if (!overUI && Input.GetMouseButton(rotateMouseButton))
         {
             float mx = Input.GetAxis("Mouse X");
             float my = Input.GetAxis("Mouse Y");
-            _targetYaw   +=  mx * mouseSensitivity * 180f * Time.deltaTime;
-            _targetPitch += (invertY ?  my : -my) * mouseSensitivity * 180f * Time.deltaTime;
+            _targetYaw += mx * mouseSensitivity * 180f * Time.deltaTime;
+            _targetPitch += (invertY ? my : -my) * mouseSensitivity * 180f * Time.deltaTime;
         }
 
         // Arrows/WASD
         float kx = 0f, ky = 0f;
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) kx += 1f;
-        if (Input.GetKey(KeyCode.LeftArrow)  || Input.GetKey(KeyCode.A)) kx -= 1f;
-        if (Input.GetKey(KeyCode.UpArrow)    || Input.GetKey(KeyCode.W)) ky += 1f;
-        if (Input.GetKey(KeyCode.DownArrow)  || Input.GetKey(KeyCode.S)) ky -= 1f;
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) kx -= 1f;
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) ky += 1f;
+        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) ky -= 1f;
 
-        if (kx != 0f) _targetYaw   += kx * keysSpeedDegPerSec * Time.deltaTime;
+        if (kx != 0f) _targetYaw += kx * keysSpeedDegPerSec * Time.deltaTime;
         if (ky != 0f) _targetPitch += (invertY ? -ky : ky) * keysSpeedDegPerSec * Time.deltaTime;
 
         _targetPitch = Mathf.Clamp(_targetPitch, yMinLimit, yMaxLimit);
 
         // Zoom (mouse wheel / +/-)
-        float scroll = Input.mouseScrollDelta.y;
         if (zoomWithPlusMinus)
         {
             if (Input.GetKey(KeyCode.Equals) || Input.GetKey(KeyCode.KeypadPlus)) scroll += 1f;
-            if (Input.GetKey(KeyCode.Minus)  || Input.GetKey(KeyCode.KeypadMinus)) scroll -= 1f;
+            if (Input.GetKey(KeyCode.Minus) || Input.GetKey(KeyCode.KeypadMinus)) scroll -= 1f;
         }
         if (Mathf.Abs(scroll) > 0.0001f)
             _targetDist = Mathf.Clamp(_targetDist - scroll * zoomSpeed, minDistance, maxDistance);
@@ -186,7 +188,7 @@ public class OrbitCameraRig : MonoBehaviour
         }
 
         // Damping
-        _yaw   = Mathf.SmoothDampAngle(_yaw,   _targetYaw,   ref _yawVel,   1f / Mathf.Max(1f, rotateDamp));
+        _yaw = Mathf.SmoothDampAngle(_yaw, _targetYaw, ref _yawVel, 1f / Mathf.Max(1f, rotateDamp));
         _pitch = Mathf.SmoothDampAngle(_pitch, _targetPitch, ref _pitchVel, 1f / Mathf.Max(1f, rotateDamp));
         distance = Mathf.SmoothDamp(distance, _targetDist, ref _distVel, 1f / Mathf.Max(1f, zoomDamp));
 
@@ -395,7 +397,7 @@ public class OrbitCameraRig : MonoBehaviour
         Quaternion lookRot = Quaternion.LookRotation(focus - view.position, Vector3.up);
         Vector3 eul = lookRot.eulerAngles;
         float destPitch = ClampAngle(eul.x, yMinLimit, yMaxLimit);
-        float destYaw   = eul.y;
+        float destYaw = eul.y;
 
         float startYaw = _targetYaw, startPitch = _targetPitch, startDist = _targetDist;
 
@@ -403,9 +405,9 @@ public class OrbitCameraRig : MonoBehaviour
         while (elapsed < t)
         {
             float a = (t <= 0f) ? 1f : (elapsed / t);
-            _targetYaw   = Mathf.LerpAngle(startYaw,   destYaw,   a);
+            _targetYaw = Mathf.LerpAngle(startYaw, destYaw, a);
             _targetPitch = Mathf.LerpAngle(startPitch, destPitch, a);
-            _targetDist  = Mathf.Lerp(startDist, targetDist, a);
+            _targetDist = Mathf.Lerp(startDist, targetDist, a);
             UpdateCameraImmediate();
             elapsed += Time.deltaTime;
             yield return null;
@@ -453,5 +455,22 @@ public class OrbitCameraRig : MonoBehaviour
         if (newOffset.HasValue) targetOffset = newOffset.Value;
         UpdateCameraImmediate();
         _lastCamPos = transform.position;
+    }
+    
+    bool IsPointerOverUI()
+    {
+        if (!lockWhenOverUI) return false;    // נשתמש גם בדגל הקיים שלך
+        if (EventSystem.current == null) return false;
+
+        // עכבר
+        if (EventSystem.current.IsPointerOverGameObject())
+            return true;
+
+        // מגע (אנדרואיד/iOS)
+        for (int i = 0; i < Input.touchCount; i++)
+            if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(i).fingerId))
+                return true;
+
+        return false;
     }
 }

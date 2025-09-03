@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 2410281297812425160}
   - component: {fileID: 8384554147896271095}
   - component: {fileID: -5882555724560654875}
+  - component: {fileID: -2038785559475957496}
   m_Layer: 5
   m_Name: MenuItemPrefab
   m_TagString: Untagged
@@ -324,3 +325,15 @@ MonoBehaviour:
   normal: {r: 1, g: 1, b: 1, a: 0.08}
   highlighted: {r: 1, g: 1, b: 1, a: 0.15}
   selected: {r: 0.1, g: 0.35, b: 1, a: 0.9}
+--- !u!114 &-2038785559475957496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6090900517445959628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d43f83cef92458ebfda6f65a6365b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
