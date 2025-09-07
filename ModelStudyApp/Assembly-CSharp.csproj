@@ -42,6 +42,7 @@
   <ItemGroup>
      <Compile Include="Assets/Scenes/Scripts/OrbitCameraRig.cs" />
      <Compile Include="Assets/Scenes/Scripts/ScrollEventForwarder.cs" />
+     <Compile Include="Assets/Scenes/Scripts/ModelMenuGroupItem.cs" />
      <Compile Include="Assets/Scenes/Scripts/UISelectionPanel.cs" />
      <Compile Include="Assets/Scenes/Scripts/HighlightGroup.cs" />
      <Compile Include="Assets/Scenes/Scripts/SelectionInfoPanel.cs" />

@@ -1,9 +1,23 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public class Highlightable : MonoBehaviour
 {
+    [Header("Menu Hierarchy Tags")]
+    [Tooltip("מזהה ייחודי לאובייקט בתפריט")]
+    public string menuId;
+
+    [Tooltip("הטקסט שיוצג בתפריט")]
+    public string menuLabel;
+
+    [Tooltip("הרמה בתפריט (0=ראשי, 1=ילד, 2=נכד וכו')")]
+    public int menuLevel = 0;
+
+    [Tooltip("מזהה ההורה בתפריט (אם ריק – זה פריט עליון)")]
+    public string parentMenuId;
+    
     [Header("Outline")]
     public bool useOutline = true;
     [Tooltip("מטרייל משיידר Custom/UnlitOutlineURP")]
