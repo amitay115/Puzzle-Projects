@@ -17,6 +17,8 @@ public class HoverHighlightManager : MonoBehaviour
     // האירוע למאזינים (UI וכו')
     public event Action<Highlightable> OnSelectionChanged;
 
+    
+
     // מצב פנימי
     Highlightable _hover;     // מה שמתחת לסמן כרגע
     Highlightable _current;   // מה שנבחר בפועל
@@ -106,7 +108,7 @@ public class HoverHighlightManager : MonoBehaviour
         // עדכן UI/מאזינים
         OnSelectionChanged?.Invoke(_current);
     }
-
+    
     public void ClearSelection()
     {
         if (_current)

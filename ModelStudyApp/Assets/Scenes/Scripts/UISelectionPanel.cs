@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,41 +5,52 @@ using TMPro;
 
 public class UISelectionPanel : MonoBehaviour
 {
-
-    Vector3  _originalOrbitTargetOffset;
-    bool     _orbitOriginalSaved;
-
-    Transform _originalOrbitTarget;           // נשמור את הטארגט המקורי
-    Transform _isoPivot;                      // פיווט של האיזולייט
-
-    [SerializeField] private Transform modelRoot; // גרור באינספקטור את root של המודל (למשל spyderMR_example)
-
-    [Header("Isolate Placement")]
-    public bool snapAboveFloor = true;
-    public float floorY = 0f;          // גובה הרצפה שלך (לרוב 0)
-    public float placePadding = 0.02f; // מרווח קטן מעל הרצפה
-
-
+    // ===== Refs =====
     [Header("Refs")]
-    public HoverHighlightManager manager;     // גרור את המנהל שעל המצלמה
-    //public CameraFocusHelper focusHelper;     // גרור את ה-Helper שעל המצלמה (לא חובה אבל מומלץ)
-    public OrbitCameraRig orbitRig;           // אם יש לך Rig עם ResetView()
+    [Tooltip("גרור את HoverHighlightManager שעל המצלמה")]
+    [SerializeField] public HoverHighlightManager manager;
+    [SerializeField] private Transform modelRoot;      // שורש המודל המקורי (למשל spyderMR_example)
+    public OrbitCameraRig orbitRig;
 
     [Header("UI")]
-    public TMPro.TMP_Text selectedNameText;             // אם אתה עם TMP: החלף ל-TMPro.TMP_Text
+    public TMP_Text selectedNameText;
     public Button btnFull;
     public Button btnTransparent;
     public Button btnIsolate;
 
+
+
+    // ===== Transparency =====
+    
+    [SerializeField] bool keepOutlineOnTransparent = true;   // להשאיר מסגרת גם כששקוף
+    [SerializeField] bool writeDepthOnTransparent = true;    // המודל השקוף יכתוב עומק (ZWrite=1)
+
     [Header("Transparency")]
     [Range(0f, 1f)] public float transparentAlpha = 0.15f;
 
-    // --- State ---
-    Transform _originalRoot;          // modelRoot המקורי
+    [Tooltip("ילד אווטליין שנוצר ע\"י ה-Highlightable")]
+    [SerializeField] string outlineChildSuffix = ".__Outline";
+    [Tooltip("מחרוזת לזיהוי שיידר אווטליין (לסינון במצב Transparent)")]
+    [SerializeField] string outlineShaderNameContains = "UnlitOutlineURP";
+
+    // ===== Isolate / Placement =====
+    [Header("Isolate Placement")]
+    public bool snapAboveFloor = true;
+    public float floorY = 0f;
+    public float placePadding = 0.02f;
+
+    // ===== Internal state =====
+    Highlightable _currentSel;          // צילום מצב הנבחר
+    Transform _originalRoot;        // שמירת שורש המודל המקורי
     bool _isolated;
     GameObject _isolatedClone;
+    Transform _isoPivot;
 
-    // קאש של חומרים פר Renderer עבור Toggle Transparency
+    Transform _originalOrbitTarget;
+    Vector3 _originalOrbitTargetOffset;
+    bool _orbitOriginalSaved;
+
+    // קאש שקיפות
     class FadeCache
     {
         public Renderer r;
@@ -50,50 +60,91 @@ public class UISelectionPanel : MonoBehaviour
     }
     readonly Dictionary<Renderer, FadeCache> _fadeMap = new();
 
-    void Start()
+    // ===== Lifecycle =====
+    void OnEnable()
     {
-        if (!manager) manager = Camera.main.GetComponent<HoverHighlightManager>();
-
-        if (manager && !_originalRoot) _originalRoot = modelRoot;
-
-        if (manager) manager.OnSelectionChanged += OnSelectionChanged;
-
-        if (orbitRig && !_originalOrbitTarget) _originalOrbitTarget = orbitRig.target;
-
-        if (orbitRig && !_orbitOriginalSaved)
+        if (!manager)
         {
-            _originalOrbitTarget        = orbitRig.target;
-            _originalOrbitTargetOffset  = orbitRig.targetOffset;
-            _orbitOriginalSaved         = true;
+            var cam = Camera.main;
+            if (cam) manager = cam.GetComponent<HoverHighlightManager>();
+            if (!manager) manager = FindObjectOfType<HoverHighlightManager>(true);
         }
 
+        if (manager)
+        {
+            manager.OnSelectionChanged += OnSelectionChanged;
+            _currentSel = manager.GetSelected();
+        }
 
-        btnFull.onClick.AddListener(OnFullClicked);
-        btnTransparent.onClick.AddListener(OnTransparentClicked);
-        btnIsolate.onClick.AddListener(OnIsolateClicked);
+        if (!_originalRoot) _originalRoot = modelRoot;
 
-        RefreshUI(manager ? manager.GetSelected() : null);
+        // שמירות מצלמה
+        if (orbitRig && !_orbitOriginalSaved)
+        {
+            _originalOrbitTarget = orbitRig.target;
+            _originalOrbitTargetOffset = orbitRig.targetOffset;
+            _orbitOriginalSaved = true;
+        }
+
+        // חיבור מאזינים לכפתורים (בלי כפילויות)
+        if (btnFull)
+        {
+            btnFull.onClick.RemoveAllListeners();
+            btnFull.onClick.AddListener(OnFullClicked);
+        }
+        if (btnTransparent)
+        {
+            btnTransparent.onClick.RemoveAllListeners();
+            btnTransparent.onClick.AddListener(OnTransparentClicked);
+        }
+        if (btnIsolate)
+        {
+            btnIsolate.onClick.RemoveAllListeners();
+            btnIsolate.onClick.AddListener(OnIsolateClicked);
+        }
+
+        RefreshUI(_currentSel);
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
         if (manager) manager.OnSelectionChanged -= OnSelectionChanged;
     }
 
-    void OnSelectionChanged(Highlightable h) => RefreshUI(h);
+    void Update() // גיבוי: אם משום מה האירוע לא הגיע
+    {
+        if (!manager) return;
+        var sel = manager.GetSelected();
+        if (sel != _currentSel)
+        {
+            _currentSel = sel;
+            RefreshUI(sel);
+        }
+    }
+
+    // ===== Selection sync =====
+    void OnSelectionChanged(Highlightable h)
+    {
+        _currentSel = h;
+        RefreshUI(h);
+    }
 
     void RefreshUI(Highlightable h)
     {
         bool hasSel = h != null;
         if (selectedNameText) selectedNameText.text = hasSel ? h.name : "(no selection)";
-        btnTransparent.interactable = hasSel;
-        btnIsolate.interactable = hasSel;
+        if (btnTransparent) btnTransparent.interactable = hasSel;
+        if (btnIsolate) btnIsolate.interactable = hasSel;
         // Full תמיד פעיל
     }
 
-    // ========================= Full =========================
-    void OnFullClicked()
+    // ===== FULL =====
+    public void OnFullClicked()
     {
+        // בטל שקיפויות שיצרנו
+        RestoreAllTransparency();
+
+        // בטל בידוד אם פעיל
         if (_isolated)
         {
             if (_isolatedClone) Destroy(_isolatedClone);
@@ -101,175 +152,248 @@ public class UISelectionPanel : MonoBehaviour
             _isoPivot = null;
 
             if (_originalRoot) _originalRoot.gameObject.SetActive(true);
-            if (manager) modelRoot = _originalRoot;
+            modelRoot = _originalRoot;
 
-            // החזר את טארגט המצלמה המקורי
-            if (orbitRig) orbitRig.target = _originalOrbitTarget;
-
+            if (orbitRig && _orbitOriginalSaved)
+            {
+                orbitRig.target = _originalOrbitTarget;
+                orbitRig.targetOffset = _originalOrbitTargetOffset;
+                orbitRig.ResetView();
+            }
             _isolated = false;
         }
-        if (orbitRig && _orbitOriginalSaved)
-        {
-            orbitRig.target       = _originalOrbitTarget;
-            orbitRig.targetOffset = _originalOrbitTargetOffset;  // ← זה הפרט החסר
-            orbitRig.ResetView();
-        }
 
-
-        // ... (שאר הניקויים: שקיפות, בחירה, ResetCameraView)
+        // נקה בחירה ואפס UI
         manager?.ClearSelection();
-        ResetCameraView();
         RefreshUI(null);
+        //SetOutlinesActive(_originalRoot, true);   // ודא שההילות חוזרות אחרי Full
     }
 
-
-    void ResetCameraView()
-    {
-        if (orbitRig) { orbitRig.ResetView(); return; }
-
-    }
-
-    // ====================== Transparent ======================
+    // ===== TRANSPARENT =====
     void OnTransparentClicked()
     {
         var sel = manager?.GetSelected();
         if (!sel) return;
 
-        var rends = sel.GetComponentsInChildren<Renderer>(includeInactive: true);
-        foreach (var r in rends)
+        var all = sel.GetComponentsInChildren<Renderer>(includeInactive: true);
+        int touched = 0;
+        foreach (var r in all)
         {
-            if (!r || r is ParticleSystemRenderer) continue;
-            ToggleRendererTransparency(r, transparentAlpha);
+            if (!IsRenderableCandidate(r)) continue;
+            if (IsOutlineRenderer(r)) continue; // לא נוגעים בחומרי ה-outline עצמם
+            if (!TryToggleRendererTransparency(r, transparentAlpha)) continue;
+            touched++;
         }
+
+        // האם להציג מסגרת גם כשהמודל שקוף?
+        SetOutlineEnabled(sel.transform, keepOutlineOnTransparent);
+        // Debug.Log($"[Transparent] changed={touched}");
     }
 
-    void ToggleRendererTransparency(Renderer r, float alpha)
+    bool IsRenderableCandidate(Renderer r)
     {
-        if (!_fadeMap.TryGetValue(r, out var cache))
+        if (!r || !r.enabled) return false;
+        if (r is ParticleSystemRenderer) return false;
+        if (r is TrailRenderer) return false;
+        if (r is LineRenderer) return false;
+        return true;
+    }
+    void SetOutlineEnabled(Transform root, bool enable)
+    {
+        foreach (var r in root.GetComponentsInChildren<Renderer>(true))
+            if (IsOutlineRenderer(r))
+                r.enabled = enable;
+    }
+
+    bool IsOutlineRenderer(Renderer r)
+    {
+        if (!string.IsNullOrEmpty(outlineChildSuffix) && r.gameObject.name.EndsWith(outlineChildSuffix))
+            return true;
+
+        var mats = r.sharedMaterials;
+        if (mats != null)
         {
-            cache = new FadeCache { r = r, originalShared = r.sharedMaterials };
-            var mats = r.materials; // instanced
             for (int i = 0; i < mats.Length; i++)
-                MakeURPLitTransparent(mats[i], alpha);
-            cache.transparentInstanced = mats;
-            _fadeMap[r] = cache;
+            {
+                var m = mats[i];
+                if (!m) continue;
+                var s = m.shader ? m.shader.name : "";
+                if (!string.IsNullOrEmpty(outlineShaderNameContains) && s.Contains(outlineShaderNameContains))
+                    return true;
+            }
         }
-
-        cache.isTransparent = !cache.isTransparent;
-        if (cache.isTransparent) r.materials = cache.transparentInstanced;
-        else r.sharedMaterials = cache.originalShared;
+        return false;
     }
 
-    static void MakeURPLitTransparent(Material m, float alpha)
+    bool TryToggleRendererTransparency(Renderer r, float alpha)
     {
-        if (!m) return;
-        // URP/Lit טיפוסי
-        if (m.HasProperty("_Surface")) m.SetFloat("_Surface", 1f); // Transparent
-        if (m.HasProperty("_Blend")) m.SetFloat("_Blend", 0f);
+        // אם יש קאש — החלפה הלוך/חזור
+        if (_fadeMap.TryGetValue(r, out var cache))
+        {
+            cache.isTransparent = !cache.isTransparent;
+            if (cache.isTransparent) r.materials = cache.transparentInstanced;
+            else r.sharedMaterials = cache.originalShared;
+            return true;
+        }
+
+        var shared = r.sharedMaterials;
+        if (shared == null || shared.Length == 0) return false;
+
+        var instanced = r.materials; // יוצר עותקים
+        bool changedAny = false;
+
+        for (int i = 0; i < instanced.Length; i++)
+        {
+            var m = instanced[i];
+            if (!m) continue;
+
+            // דלג על חומרים חשודים כאווטליין
+            var shaderName = m.shader ? m.shader.name : "";
+            if (!string.IsNullOrEmpty(outlineShaderNameContains) && shaderName.Contains(outlineShaderNameContains))
+                continue;
+
+            if (MakeURPLitTransparentSafe(m, transparentAlpha, writeDepthOnTransparent))
+                changedAny = true;
+        }
+
+        if (!changedAny)
+        {
+            // לא שינינו כלום—אל תשאיר instanced
+            r.sharedMaterials = shared;
+            return false;
+        }
+
+        // שמור קאש והחל שקיפות
+        _fadeMap[r] = new FadeCache
+        {
+            r = r,
+            originalShared = shared,
+            transparentInstanced = instanced,
+            isTransparent = true
+        };
+        r.materials = instanced;
+        return true;
+    }
+
+    bool MakeURPLitTransparentSafe(Material m, float alpha, bool forceZWrite)
+    {
+        bool hasSurface = m.HasProperty("_Surface");
+        bool hasBase    = m.HasProperty("_BaseColor");
+        bool hasColor   = m.HasProperty("_Color");
+        if (!hasSurface && !hasBase && !hasColor) return false;
+
+        if (hasSurface) m.SetFloat("_Surface", 1f); // Transparent
         if (m.HasProperty("_SrcBlend")) m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
         if (m.HasProperty("_DstBlend")) m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        if (m.HasProperty("_ZWrite")) m.SetFloat("_ZWrite", 0f);
-        if (m.HasProperty("_ZWrite")) m.SetFloat("_ZWrite", 1f); // כתיבת עומק גם בשקוף
+
+        // הטריק: גם בשקיפות משאירים כתיבת עומק כדי שה-outline (עם ZTest) לא ימלא את פני השטח
+        if (m.HasProperty("_ZWrite")) m.SetFloat("_ZWrite", forceZWrite ? 1f : 0f);
+
         m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-        m.DisableKeyword("_ALPHAPREMULTIPLY_ON");
         m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
 
-        if (m.HasProperty("_BaseColor"))
-        {
-            var c = m.GetColor("_BaseColor"); c.a = Mathf.Clamp01(alpha); m.SetColor("_BaseColor", c);
-        }
-        else if (m.HasProperty("_Color"))
-        {
-            var c = m.GetColor("_Color"); c.a = Mathf.Clamp01(alpha); m.SetColor("_Color", c);
-        }
+        if (hasBase) { var c = m.GetColor("_BaseColor"); c.a = Mathf.Clamp01(alpha); m.SetColor("_BaseColor", c); }
+        else if (hasColor) { var c = m.GetColor("_Color"); c.a = Mathf.Clamp01(alpha); m.SetColor("_Color", c); }
+
+        return true;
     }
 
-    // ========================= Isolate ======================
-    void OnIsolateClicked()
+    void RestoreAllTransparency()
     {
-        var sel = manager?.GetSelected();
+        foreach (var kv in _fadeMap)
+        {
+            var r = kv.Key; var cache = kv.Value;
+            if (!r) continue;
+
+            // החזר למקורי
+            try { r.sharedMaterials = cache.originalShared; } catch { }
+
+            // נקה עותקים
+            if (cache.transparentInstanced != null)
+            {
+                for (int i = 0; i < cache.transparentInstanced.Length; i++)
+                {
+                    var m = cache.transparentInstanced[i];
+                    if (m) Destroy(m);
+                }
+            }
+        }
+        _fadeMap.Clear();
+    }
+
+    // ===== ISOLATE =====
+    public void OnIsolateClicked()
+    {
+        var sel = _currentSel ?? (manager ? manager.GetSelected() : null);
         if (!sel || _isolated) return;
 
-        Transform src = sel.transform;
+        var src = sel.transform;
 
-        // 1) ודא שיש מה לרנדר
+        // ודא שיש מה לרנדר
         var srcRenderers = src.GetComponentsInChildren<Renderer>(true);
         if (srcRenderers.Length == 0)
         {
-            Debug.LogError($"[Isolate] '{src.name}' לא מכיל Renderer. בחר הורה עם רנדררים.");
+            Debug.LogError($"[Isolate] '{src.name}' לא מכיל Renderer");
             return;
         }
 
-        // 2) כבה את המודל המקורי
+        // כבה מודל מקורי
         if (_originalRoot) _originalRoot.gameObject.SetActive(false);
 
-        // 3) בנה קונטיינר שמחליף את ההורה המקורי (כולל world-scale של ההורה)
+        // קונטיינר בעולם (שומר world-scale של ההורה)
         Transform p = src.parent;
         var container = new GameObject(src.name + "__IsolatedRoot").transform;
         if (p == null)
         {
-            container.position   = Vector3.zero;
-            container.rotation   = Quaternion.identity;
+            container.position = Vector3.zero;
+            container.rotation = Quaternion.identity;
             container.localScale = Vector3.one;
         }
         else
         {
-            container.position   = p.position;
-            container.rotation   = p.rotation;
-            container.localScale = p.lossyScale;   // ← משמר את world-scale של הענף
+            container.position = p.position;
+            container.rotation = p.rotation;
+            container.localScale = p.lossyScale;
         }
 
-        // 4) צור Pivot בתוך הקונטיינר (יהיה נק' המבט של ה-OrbitRig)
+        // Pivot
         _isoPivot = new GameObject(src.name + "_Pivot").transform;
         _isoPivot.SetParent(container, false);
         _isoPivot.localPosition = Vector3.zero;
         _isoPivot.localRotation = Quaternion.identity;
 
-        // 5) שכפל את האובייקט והחזר את ה-LocalTransform המקורי שלו תחת הקונטיינר
+        // שכפול הענף
         _isolatedClone = Instantiate(src.gameObject);
         var cloneT = _isolatedClone.transform;
         cloneT.SetParent(container, worldPositionStays: false);
-        cloneT.localPosition = src.localPosition;   // ← כמו במקור
-        cloneT.localRotation = src.localRotation;   // ← כמו במקור
-        cloneT.localScale    = src.localScale;      // ← הקונטיינר נושא את סקייל ההורה
+        cloneT.localPosition = src.localPosition;
+        cloneT.localRotation = src.localRotation;
+        cloneT.localScale = src.localScale;
 
-        // 6) נקה לגמרי Outline/Highlight וחזֵר חומרים ל-Opaque
-        StripOutlineAndHighlightable(container);       // מוחק ילדים בשם ".__Outline" ומסיר Highlightable
-        EnsureRenderersVisibleOpaque(container);       // מחזיר ל-Opaque + alpha=1
+        // נקה אווטליין ושקיפויות, ודא רנדרים גלויים ואטומים
+        StripOutlineAndHighlightable(container);
+        EnsureRenderersVisibleOpaque(container);
         SetLayerRecursively(container, LayerMask.NameToLayer("Default"));
         container.gameObject.SetActive(true);
 
-        // 7) מֵרכֵּז את האובייקט לאפס:
-        //    מחשבים Bounds בעולם, מזיזים את הקונטיינר כך שמרכז ה-Bounds יהיה (0,0,0)
-        bool hasR; 
-        var b = ComputeWorldBounds(container, out hasR);
+        // מרכז לאפס והרם מעל הרצפה
+        bool hasR; var b = ComputeWorldBounds(container, out hasR);
         if (hasR)
         {
-            // (א) מרכז את מרכז ה-Bounds לאפס
             container.position -= b.center;
 
-            // (ב) הרם כך שהתחתית של ה-Bounds תהיה מעל הרצפה
             if (snapAboveFloor)
             {
-                b = ComputeWorldBounds(container, out hasR);       // עדכון bounds אחרי ההזזה
-                float lift = (floorY + placePadding) - b.min.y;    // כמה חסר כדי להיות מעל הרצפה
-                if (lift > 0f)
-                {
-                    container.position += new Vector3(0f, lift, 0f);
-                    b = ComputeWorldBounds(container, out hasR);   // עדכון נוסף (לא חובה, אבל נחמד לדיבוג)
-                }
+                b = ComputeWorldBounds(container, out hasR);
+                float lift = (floorY + placePadding) - b.min.y;
+                if (lift > 0f) container.position += new Vector3(0f, lift, 0f);
             }
-
-            // (ג) עדכן את הפיבוט כך שישב בדיוק באפס עולמי
-            // בסיום כל ההזזות – הצב את הפיבוט במרכז האמיתי של האובייקט
             SetIsoPivotToBoundsCenter(container);
-
         }
 
-
-        // 3) אחרי כל ההזזות – מיקום מצלמה לראות טוב
+        // כוון מצלמה
         modelRoot = container;
-        if (orbitRig != null)
+        if (orbitRig)
         {
             orbitRig.target = _isoPivot;
             orbitRig.targetOffset = Vector3.zero;
@@ -280,69 +404,16 @@ public class UISelectionPanel : MonoBehaviour
             PlaceCameraToSee(container);
         }
 
-
-        // 8) עדכן את המנהל והמצלמה
-        modelRoot = container;
-
-        if (orbitRig != null)
-        {
-            orbitRig.target = _isoPivot;
-            orbitRig.targetOffset = Vector3.zero;
-            orbitRig.ResetView();             // מבט התחלתי נקי סביב האפס
-        }
-        else
-        {
-            // fallback אם אין OrbitRig
-            PlaceCameraToSee(container);
-        }
-
-        // 9) אין בחירה/Outline במצב בידוד (כדי שלא “יחזור” השיידר)
-        manager.ClearSelection();
+        // בטל בחירה (שלא יחזור השיידר)
+        manager?.ClearSelection();
 
         _isolated = true;
-        RefreshUI(null); // מעדכן טקסט ל-(no selection)
+        RefreshUI(null);
     }
 
-
-
-
-
-    static void CenterToOrigin(Transform root)
-    {
-        var rends = root.GetComponentsInChildren<Renderer>(true);
-        if (rends.Length == 0) { root.position = Vector3.zero; root.rotation = Quaternion.identity; return; }
-
-        Bounds b = new Bounds(rends[0].bounds.center, Vector3.zero);
-        for (int i = 0; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
-
-        Vector3 center = b.center;
-        root.position += -center;          // מזיז כך שמרכז ה-Bounds באפס
-        root.rotation = Quaternion.identity;
-    }
-
-    static Vector3 CenterToOriginAndReturnWorldCenter(Transform root)
-    {
-        var rends = root.GetComponentsInChildren<Renderer>(true);
-        if (rends.Length == 0)
-        {
-            root.position = Vector3.zero;
-            root.rotation = Quaternion.identity;
-            return Vector3.zero;
-        }
-
-        Bounds b = new Bounds(rends[0].bounds.center, Vector3.zero);
-        for (int i = 0; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
-
-        Vector3 worldCenter = b.center;
-        // הזזה כך שמרכז ה-Bounds ישב באפס עולמי
-        root.position += -worldCenter;
-        root.rotation = Quaternion.identity;
-        return worldCenter;
-    }
-
+    // ===== Helpers (renderers/materials/bounds/camera) =====
     static void StripOutlineAndHighlightable(Transform root)
     {
-        // 1) מחיקת ילדים שנוצרו ע"י Highlightable (שם נגמר ב ".__Outline")
         var toDelete = new List<GameObject>();
         var rends = root.GetComponentsInChildren<MeshRenderer>(true);
         foreach (var r in rends)
@@ -351,46 +422,12 @@ public class UISelectionPanel : MonoBehaviour
         for (int i = 0; i < toDelete.Count; i++)
             Destroy(toDelete[i]);
 
-        // 2) הורדת Highlightable מהשכפול (לא צריך בזמן בידוד)
         var highs = root.GetComponentsInChildren<Highlightable>(true);
         for (int i = 0; i < highs.Length; i++)
             Destroy(highs[i]);
     }
 
-    // מחזיר חומרים ל־Opaque + Alpha=1 ומוודא Renderer.enabled
     static void EnsureRenderersVisibleOpaque(Transform root)
-    {
-        var rrs = root.GetComponentsInChildren<Renderer>(true);
-        foreach (var r in rrs)
-        {
-            if (!r) continue;
-            r.enabled = true;
-
-            var mats = r.materials; // instanced (מותר כאן)
-            for (int i = 0; i < mats.Length; i++)
-            {
-                var m = mats[i]; if (!m) continue;
-                if (m.HasProperty("_Surface")) m.SetFloat("_Surface", 0f); // Opaque
-                if (m.HasProperty("_ZWrite")) m.SetFloat("_ZWrite", 1f);
-                m.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
-                m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
-
-                if (m.HasProperty("_BaseColor"))
-                { var c = m.GetColor("_BaseColor"); c.a = 1f; m.SetColor("_BaseColor", c); }
-                else if (m.HasProperty("_Color"))
-                { var c = m.GetColor("_Color"); c.a = 1f; m.SetColor("_Color", c); }
-            }
-        }
-    }
-    
-    static void SetLayerRecursively(Transform t, int layer)
-    {
-        t.gameObject.layer = layer;
-        for (int i = 0; i < t.childCount; i++)
-            SetLayerRecursively(t.GetChild(i), layer);
-    }
-
-    static void EnsureRenderersVisible(Transform root)
     {
         var rrs = root.GetComponentsInChildren<Renderer>(true);
         foreach (var r in rrs)
@@ -401,12 +438,9 @@ public class UISelectionPanel : MonoBehaviour
             var mats = r.materials; // instanced
             for (int i = 0; i < mats.Length; i++)
             {
-                var m = mats[i];
-                if (!m) continue;
-
-                // החזר ל־Opaque עם אלפא 1 (URP/Lit טיפוסי)
-                if (m.HasProperty("_Surface")) m.SetFloat("_Surface", 0f);
-                if (m.HasProperty("_ZWrite"))  m.SetFloat("_ZWrite", 1f);
+                var m = mats[i]; if (!m) continue;
+                if (m.HasProperty("_Surface")) m.SetFloat("_Surface", 0f); // Opaque
+                if (m.HasProperty("_ZWrite")) m.SetFloat("_ZWrite", 1f);
                 m.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
                 m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
 
@@ -429,6 +463,13 @@ public class UISelectionPanel : MonoBehaviour
         return b;
     }
 
+    static void SetLayerRecursively(Transform t, int layer)
+    {
+        t.gameObject.layer = layer;
+        for (int i = 0; i < t.childCount; i++)
+            SetLayerRecursively(t.GetChild(i), layer);
+    }
+
     void PlaceCameraToSee(Transform root)
     {
         var cam = Camera.main;
@@ -438,8 +479,7 @@ public class UISelectionPanel : MonoBehaviour
         var center = b.center;
         float radius = Mathf.Max(b.extents.magnitude, 0.5f);
 
-        // אם יש OrbitCameraRig – ננסה Reset ואז נרחיק מעט
-        if (orbitRig != null && orbitRig.target != null)
+        if (orbitRig && orbitRig.target)
         {
             orbitRig.ResetView();
             var pos = center - cam.transform.forward * (radius * 2.5f);
@@ -453,32 +493,70 @@ public class UISelectionPanel : MonoBehaviour
             cam.transform.rotation = Quaternion.LookRotation(center - pos, Vector3.up);
         }
     }
+
     void SetIsoPivotToBoundsCenter(Transform container)
     {
         if (_isoPivot == null || container == null) return;
-
-        bool hasR;
-        var b = ComputeWorldBounds(container, out hasR);
+        bool hasR; var b = ComputeWorldBounds(container, out hasR);
         if (!hasR) return;
 
-        // מציב את הפיבוט במרכז המדויק של האובייקט (בעולם), כולל בציר ה־Y
         _isoPivot.position = b.center;
-        _isoPivot.rotation = Quaternion.identity; // אופציונלי: לאפס גלגול/נטייה של הפיבוט
+        _isoPivot.rotation = Quaternion.identity;
     }
 
-
-    #if UNITY_EDITOR
-    // לעזור לך למסגר מיד ב-SceneView
-    static void FrameInSceneView(Transform t)
+    // בודק אם מתחת ל-root יש לפחות Renderer אחד ששקוף כרגע (לפי ה-fade cache)
+    bool IsAnyTransparentUnder(Transform root)
     {
-        var sv = UnityEditor.SceneView.lastActiveSceneView;
-        if (sv != null)
+        if (!root) return false;
+        var rends = root.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < rends.Length; i++)
         {
-            sv.FrameSelected();
+            var r = rends[i];
+            if (!r) continue;
+            if (_fadeMap.TryGetValue(r, out var cache) && cache.isTransparent)
+                return true;
+        }
+        return false;
+    }
+    
+    
+    // מדליק/מכבה את כל רנדררי האווטליין (הילדים שה-Highlightable יוצר)
+    void SetOutlinesActive(Transform root, bool active)
+    {
+        if (!root) return;
+
+        // לפי שם ילד מיוחד
+        if (!string.IsNullOrEmpty(outlineChildSuffix))
+        {
+            var trs = root.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < trs.Length; i++)
+            {
+                var t = trs[i];
+                if (t.gameObject.name.EndsWith(outlineChildSuffix))
+                    t.gameObject.SetActive(active);
+            }
+        }
+
+        // בנוסף: אם במקרה יש Outline כשיידר על אותו Renderer (לא רק ילד נפרד)
+        var rends = root.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < rends.Length; i++)
+        {
+            var r = rends[i];
+            if (!r) continue;
+            var mats = r.sharedMaterials;
+            if (mats == null) continue;
+            bool looksLikeOutline = false;
+            for (int m = 0; m < mats.Length; m++)
+            {
+                var mm = mats[m];
+                if (!mm) continue;
+                var s = mm.shader ? mm.shader.name : "";
+                if (!string.IsNullOrEmpty(outlineShaderNameContains) && s.Contains(outlineShaderNameContains))
+                {
+                    looksLikeOutline = true; break;
+                }
+            }
+            if (looksLikeOutline) r.enabled = active;
         }
     }
-    #endif
-
-
-
 }
