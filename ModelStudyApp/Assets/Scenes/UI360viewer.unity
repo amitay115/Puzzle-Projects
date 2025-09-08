@@ -2184,7 +2184,7 @@ MonoBehaviour:
   pickCamera: {fileID: 963194227}
   pickLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 183
   rayMaxDistance: 500
   blockWhenPointerOverUI: 1
   selectMouseButton: 0
@@ -6052,6 +6052,8 @@ GameObject:
   - component: {fileID: 8598906429834751218}
   - component: {fileID: 6314175544929021694}
   - component: {fileID: 5782856028376723804}
+  - component: {fileID: 8598906429834751220}
+  - component: {fileID: 8598906429834751219}
   m_Layer: 0
   m_Name: Cabine_Detail.38.mesh
   m_TagString: Untagged
@@ -6118,6 +6120,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!4 &1899848010978825371
 Transform:
   m_ObjectHideFlags: 0
@@ -6228,6 +6232,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!114 &2111196874135274602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6859,6 +6865,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!4 &2938006177310549751
 Transform:
   m_ObjectHideFlags: 0
@@ -8753,6 +8761,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!1 &5951393625192875894
 GameObject:
   m_ObjectHideFlags: 0
@@ -8832,6 +8842,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!1 &5980921913768880116
 GameObject:
   m_ObjectHideFlags: 0
@@ -9376,6 +9388,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!1 &7212658464211447168
 GameObject:
   m_ObjectHideFlags: 0
@@ -9850,6 +9864,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!65 &7741256908243174940
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9971,6 +9987,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!4 &7787774553092583333
 Transform:
   m_ObjectHideFlags: 0
@@ -10317,6 +10335,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!65 &8416627520506652014
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10398,6 +10418,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!23 &8511326556131742305
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10555,6 +10577,59 @@ Transform:
   m_Father: {fileID: 4004985300829269459}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8598906429834751219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847504918071116428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b75c6087006a440b6b3a9580d8ac02c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuId: detail
+  menuLabel: detail
+  menuLevel: 1
+  parentMenuId: cabin
+  useOutline: 1
+  outlineMaterial: {fileID: 2100000, guid: 01c19c61bc47343029838fabf810f983, type: 2}
+  outlineShellScale: 1
+  hoverColor: {r: 0, g: 1, b: 1, a: 1}
+  hoverThickness: 0.006
+  hoverAlpha: 1
+  hoverZBias: -1.5
+  selectedColor: {r: 1, g: 0.65, b: 0, a: 1}
+  selectedThickness: 0.008
+  selectedAlpha: 1
+  selectedZBias: -1.5
+  hoverScale: 1
+  scaleInLerp: 12
+  scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
+--- !u!65 &8598906429834751220
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847504918071116428}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.00047976064, y: 0.006540385, z: 0.0014523499}
+  m_Center: {x: 0.0150872525, y: 0.00000007066409, z: 0.009043514}
 --- !u!1 &8600806825909498636
 GameObject:
   m_ObjectHideFlags: 0
@@ -10672,6 +10747,12 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms:
+  - {fileID: 8598906429834751218}
+  - {fileID: 4581037830087459106}
+  - {fileID: 8756894964000164455}
+  - {fileID: 6855778206559717522}
 --- !u!65 &8624069564011962364
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11015,6 +11096,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!65 &8761587632004700808
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11264,6 +11347,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!65 &9005867525213156298
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11364,6 +11449,8 @@ MonoBehaviour:
   hoverScale: 1
   scaleInLerp: 12
   scaleOutLerp: 10
+  isolateIncludeSelf: 1
+  isolateAlsoTransforms: []
 --- !u!65 &9064384417960704652
 BoxCollider:
   m_ObjectHideFlags: 0

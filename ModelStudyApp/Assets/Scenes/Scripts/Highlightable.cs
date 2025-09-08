@@ -17,7 +17,7 @@ public class Highlightable : MonoBehaviour
 
     [Tooltip("מזהה ההורה בתפריט (אם ריק – זה פריט עליון)")]
     public string parentMenuId;
-    
+
     [Header("Outline")]
     public bool useOutline = true;
     [Tooltip("מטרייל משיידר Custom/UnlitOutlineURP")]
@@ -41,6 +41,15 @@ public class Highlightable : MonoBehaviour
     [Min(1f)] public float hoverScale = 1f;      // השאר 1 לביטול קפיצה
     public float scaleInLerp = 12f;
     public float scaleOutLerp = 10f;
+
+    [Header("Isolate bundle")]
+    public bool isolateIncludeSelf = true;
+    [Tooltip("אם מסומן – גם העצמי ייכלל באיזולייט יחד עם הלינקים.")]
+    public List<Transform> isolateAlsoTransforms = new List<Transform>();
+    
+
+    [Tooltip("חלקים נוספים שייכללו יחד באיזולייט עם האובייקט הזה.")]
+    //public List<Highlightable> isolateAlso = new();
 
     // --- מצב פנימי ---
     bool _hover, _selected;

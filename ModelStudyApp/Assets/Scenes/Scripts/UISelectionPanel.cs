@@ -5,6 +5,9 @@ using TMPro;
 
 public class UISelectionPanel : MonoBehaviour
 {
+    // שורשים שנוצרו בבידוד (יכול להיות יותר מאחד אם תרצה לאפשר כמה סבבים)
+    readonly List<Transform> _isoRoots = new();
+
     // ===== Refs =====
     [Header("Refs")]
     [Tooltip("גרור את HoverHighlightManager שעל המצלמה")]
@@ -21,7 +24,7 @@ public class UISelectionPanel : MonoBehaviour
 
 
     // ===== Transparency =====
-    
+
     [SerializeField] bool keepOutlineOnTransparent = true;   // להשאיר מסגרת גם כששקוף
     [SerializeField] bool writeDepthOnTransparent = true;    // המודל השקוף יכתוב עומק (ZWrite=1)
 
@@ -141,32 +144,32 @@ public class UISelectionPanel : MonoBehaviour
     // ===== FULL =====
     public void OnFullClicked()
     {
-        // בטל שקיפויות שיצרנו
+        // 1) בטל שקיפויות שיצרנו
         RestoreAllTransparency();
 
-        // בטל בידוד אם פעיל
-        if (_isolated)
+        // 2) בטל בידוד אם פעיל – השמד את כל שורשי הבידוד
+        DestroyAllIsoRoots();   // מנקה גם _isoPivot וגם _isolated
+
+        // 3) החזר את המודל המקורי לתצוגה
+        if (_originalRoot) 
+            _originalRoot.gameObject.SetActive(true);
+
+        modelRoot = _originalRoot;
+
+        // 4) החזר את ה-OrbitRig לערכי ברירת המחדל ששמרנו
+        if (orbitRig && _orbitOriginalSaved)
         {
-            if (_isolatedClone) Destroy(_isolatedClone);
-            _isolatedClone = null;
-            _isoPivot = null;
-
-            if (_originalRoot) _originalRoot.gameObject.SetActive(true);
-            modelRoot = _originalRoot;
-
-            if (orbitRig && _orbitOriginalSaved)
-            {
-                orbitRig.target = _originalOrbitTarget;
-                orbitRig.targetOffset = _originalOrbitTargetOffset;
-                orbitRig.ResetView();
-            }
-            _isolated = false;
+            orbitRig.target       = _originalOrbitTarget;
+            orbitRig.targetOffset = _originalOrbitTargetOffset;
+            orbitRig.ResetView();
         }
 
-        // נקה בחירה ואפס UI
+        // 5) נקה בחירה ועדכן UI
         manager?.ClearSelection();
         RefreshUI(null);
-        //SetOutlinesActive(_originalRoot, true);   // ודא שההילות חוזרות אחרי Full
+
+        // 6) החזר את ההילות/אאוטליינים אם יש צורך
+        //SetOutlinesActive(_originalRoot, true);
     }
 
     // ===== TRANSPARENT =====
@@ -278,8 +281,8 @@ public class UISelectionPanel : MonoBehaviour
     bool MakeURPLitTransparentSafe(Material m, float alpha, bool forceZWrite)
     {
         bool hasSurface = m.HasProperty("_Surface");
-        bool hasBase    = m.HasProperty("_BaseColor");
-        bool hasColor   = m.HasProperty("_Color");
+        bool hasBase = m.HasProperty("_BaseColor");
+        bool hasColor = m.HasProperty("_Color");
         if (!hasSurface && !hasBase && !hasColor) return false;
 
         if (hasSurface) m.SetFloat("_Surface", 1f); // Transparent
@@ -324,25 +327,41 @@ public class UISelectionPanel : MonoBehaviour
     // ===== ISOLATE =====
     public void OnIsolateClicked()
     {
+        // 0) בחירה עדכנית
         var sel = _currentSel ?? (manager ? manager.GetSelected() : null);
-        if (!sel || _isolated) return;
+        if (!sel) return;
 
-        var src = sel.transform;
+        // אם כבר במצב בידוד – ננקה קודם את כל שורשי הבידוד הקיימים
+        if (_isolated)
+            DestroyAllIsoRoots();
 
-        // ודא שיש מה לרנדר
-        var srcRenderers = src.GetComponentsInChildren<Renderer>(true);
-        if (srcRenderers.Length == 0)
+        // 1) אוספים את כל ה־Transforms שייכנסו לבידוד (הנבחר + also)
+        var sources = CollectIsolateSources(sel);
+        if (sources == null || sources.Count == 0) return;
+
+        // ודא שלפחות אחד מכיל Renderer
+        bool anyRenderable = false;
+        for (int i = 0; i < sources.Count; i++)
         {
-            Debug.LogError($"[Isolate] '{src.name}' לא מכיל Renderer");
+            var s = sources[i];
+            if (s && s.GetComponentsInChildren<Renderer>(true).Length > 0)
+            { anyRenderable = true; break; }
+        }
+        if (!anyRenderable)
+        {
+            Debug.LogWarning("[Isolate] No renderers found in selection bundle.");
             return;
         }
 
-        // כבה מודל מקורי
+        // 2) כיבוי המודל המקורי
         if (_originalRoot) _originalRoot.gameObject.SetActive(false);
 
-        // קונטיינר בעולם (שומר world-scale של ההורה)
-        Transform p = src.parent;
-        var container = new GameObject(src.name + "__IsolatedRoot").transform;
+        // 3) קונטיינר בידוד – נבנה לפי הורה של הפריט הראשון
+        var first = sources[0];
+        Transform p = first ? first.parent : null;
+
+        var container = new GameObject(first.name + "__IsolatedRoot").transform;
+        _isoRoots.Add(container);
         if (p == null)
         {
             container.position = Vector3.zero;
@@ -353,30 +372,38 @@ public class UISelectionPanel : MonoBehaviour
         {
             container.position = p.position;
             container.rotation = p.rotation;
-            container.localScale = p.lossyScale;
+            container.localScale = p.lossyScale; // world-scale של ההורה
         }
 
-        // Pivot
-        _isoPivot = new GameObject(src.name + "_Pivot").transform;
+        // 4) Pivot למבט ה־Orbit
+        _isoPivot = new GameObject(first.name + "_Pivot").transform;
         _isoPivot.SetParent(container, false);
         _isoPivot.localPosition = Vector3.zero;
         _isoPivot.localRotation = Quaternion.identity;
 
-        // שכפול הענף
-        _isolatedClone = Instantiate(src.gameObject);
-        var cloneT = _isolatedClone.transform;
-        cloneT.SetParent(container, worldPositionStays: false);
-        cloneT.localPosition = src.localPosition;
-        cloneT.localRotation = src.localRotation;
-        cloneT.localScale = src.localScale;
+        // 5) שכפול כל מקורות החבילה אל תוך הקונטיינר
+        for (int i = 0; i < sources.Count; i++)
+        {
+            var src = sources[i];
+            if (!src) continue;
 
-        // נקה אווטליין ושקיפויות, ודא רנדרים גלויים ואטומים
-        StripOutlineAndHighlightable(container);
-        EnsureRenderersVisibleOpaque(container);
+            var clone = Instantiate(src.gameObject);
+            var ct = clone.transform;
+            ct.SetParent(container, worldPositionStays: false);
+            ct.localPosition = src.localPosition;
+            ct.localRotation = src.localRotation;
+            ct.localScale    = src.localScale;
+
+            // ניקוי Outline/Highlightable + החזרת חומרים לאטומים
+            StripOutlineAndHighlightable(ct);
+            EnsureRenderersVisibleOpaque(ct);
+        }
+
+        // 6) שכבה+הפעלה
         SetLayerRecursively(container, LayerMask.NameToLayer("Default"));
         container.gameObject.SetActive(true);
 
-        // מרכז לאפס והרם מעל הרצפה
+        // 7) מרכז לאפס והרם מעל הרצפה (לפי הגדרות)
         bool hasR; var b = ComputeWorldBounds(container, out hasR);
         if (hasR)
         {
@@ -388,13 +415,18 @@ public class UISelectionPanel : MonoBehaviour
                 float lift = (floorY + placePadding) - b.min.y;
                 if (lift > 0f) container.position += new Vector3(0f, lift, 0f);
             }
+
             SetIsoPivotToBoundsCenter(container);
         }
 
-        // כוון מצלמה
+        // 8) שמור את שורש הבידוד כדי שנוכל למחוק אותו ב-Full
+        if (_isoRoots != null) _isoRoots.Add(container);
+
+        // 9) כיוון מצלמה
         modelRoot = container;
         if (orbitRig)
         {
+            // שמירת יעד המקור נעשית פעם אחת ב-OnEnable/Start (_orbitOriginalSaved)
             orbitRig.target = _isoPivot;
             orbitRig.targetOffset = Vector3.zero;
             orbitRig.ResetView();
@@ -404,11 +436,34 @@ public class UISelectionPanel : MonoBehaviour
             PlaceCameraToSee(container);
         }
 
-        // בטל בחירה (שלא יחזור השיידר)
+        // 10) בטל בחירה כדי שהשיידר לא יחזור
         manager?.ClearSelection();
 
         _isolated = true;
         RefreshUI(null);
+    }
+
+    List<Transform> CollectIsolateSources(Highlightable root)
+    {
+        var list = new List<Transform>();
+        var seen = new HashSet<Transform>();
+
+        if (root == null) return list;
+
+        if (root.isolateIncludeSelf && root.transform && seen.Add(root.transform))
+            list.Add(root.transform);
+
+        if (root.isolateAlsoTransforms != null)
+        {
+            for (int i = 0; i < root.isolateAlsoTransforms.Count; i++)
+            {
+                var t = root.isolateAlsoTransforms[i];
+                if (!t) continue;
+                if (seen.Add(t)) list.Add(t);
+            }
+        }
+
+        return list;
     }
 
     // ===== Helpers (renderers/materials/bounds/camera) =====
@@ -518,8 +573,8 @@ public class UISelectionPanel : MonoBehaviour
         }
         return false;
     }
-    
-    
+
+
     // מדליק/מכבה את כל רנדררי האווטליין (הילדים שה-Highlightable יוצר)
     void SetOutlinesActive(Transform root, bool active)
     {
@@ -558,5 +613,14 @@ public class UISelectionPanel : MonoBehaviour
             }
             if (looksLikeOutline) r.enabled = active;
         }
+    }
+    void DestroyAllIsoRoots()
+    {
+        RestoreAllTransparency(); // אם אתה משתמש בשקיפויות
+        for (int i = 0; i < _isoRoots.Count; i++)
+            if (_isoRoots[i]) Destroy(_isoRoots[i].gameObject);
+        _isoRoots.Clear();
+        _isoPivot = null;
+        _isolated = false;
     }
 }
