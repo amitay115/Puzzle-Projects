@@ -236,14 +236,14 @@ public class UISelectionPanel : MonoBehaviour
         var container = new GameObject(first.name + "__IsolatedRoot").transform;
         if (p == null)
         {
-            container.position   = Vector3.zero;
-            container.rotation   = Quaternion.identity;
+            container.position = Vector3.zero;
+            container.rotation = Quaternion.identity;
             container.localScale = Vector3.one;
         }
         else
         {
-            container.position   = p.position;
-            container.rotation   = p.rotation;
+            container.position = p.position;
+            container.rotation = p.rotation;
             container.localScale = p.lossyScale; // world-scale של ההורה
         }
 
@@ -267,10 +267,10 @@ public class UISelectionPanel : MonoBehaviour
             ct.SetParent(container, worldPositionStays: false);
             ct.localPosition = src.localPosition;
             ct.localRotation = src.localRotation;
-            ct.localScale    = src.localScale;
+            ct.localScale = src.localScale;
 
             // ניקוי Outline/Highlightable + החזרת חומרים לאטומים
-            StripOutlineAndHighlightable(ct);
+            StripOutlineChildrenOnly(ct);
             EnsureRenderersVisibleOpaque(ct);
         }
 
@@ -312,6 +312,8 @@ public class UISelectionPanel : MonoBehaviour
 
         _isolated = true;
         RefreshUI(null);
+        // כעת modelRoot מצביע על הקונטיינר של הבידוד – נבנה אינדקס חדש למשפחה הלוגית בתוך הבידוד
+        BuildHighlightableIndex();
 
         // בידוד מציג מודל חלופי – אם תרצה לבחור שם אובייקטים, זה מודל without Highlightable
         // לכן אין צורך לאנדקס כאן. נחזור לאינדוקס כשנחזור ל-Full.
@@ -357,6 +359,19 @@ public class UISelectionPanel : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    // מסיר רק את אובייקטי ה-Outline שכבר קיימים כילדים, מבלי לגעת ב-Highlightable
+    static void StripOutlineChildrenOnly(Transform root)
+    {
+        var toDelete = new List<GameObject>();
+        var rends = root.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var r in rends)
+            if (r.gameObject.name.EndsWith(".__Outline"))
+                toDelete.Add(r.gameObject);
+
+        for (int i = 0; i < toDelete.Count; i++)
+            if (toDelete[i]) Destroy(toDelete[i]);
     }
 
     void UpdateColliderGateForSelection()
