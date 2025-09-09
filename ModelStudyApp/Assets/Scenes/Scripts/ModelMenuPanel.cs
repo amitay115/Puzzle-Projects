@@ -364,7 +364,7 @@ public class ModelMenuPanel : MonoBehaviour
         float left = Mathf.Max(0, level) * indentPerLevel;
         rt.offsetMin = new Vector2(left, rt.offsetMin.y);
     }
-    
+
     private System.Collections.IEnumerator SelectNextFrame(Highlightable h)
     {
         // תחכה פריים אחד כדי לתת ל־Layout/Content להתעדכן
@@ -372,5 +372,18 @@ public class ModelMenuPanel : MonoBehaviour
 
         if (selectionManager != null && h != null)
             selectionManager.SelectFromUI(h);
+    }
+    
+    public void SetModelRoot(Transform newRoot, bool keepOpenState = true)
+    {
+        modelRoot = newRoot;
+
+        // אופציונלי: לשמר מצב פתוח/סגור של הפאנל
+        bool wasOpen = _open;
+
+        BuildList();                 // בונה רשימות (כולל מתקפלות) מתוך השורש החדש
+
+        if (keepOpenState)
+            SetOpen(wasOpen, instant: true);  // לא “יקפוץ” בגובה
     }
 }

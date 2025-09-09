@@ -5,6 +5,8 @@ using TMPro;
 
 public class UISelectionPanel : MonoBehaviour
 {
+    [Header("Panels")]
+    public ModelMenuPanel modelMenuPanel; // גרור באינספקטור
     // ===== Refs =====
     [Header("Refs")]
     [Tooltip("גרור את HoverHighlightManager שעל המצלמה")]
@@ -158,10 +160,12 @@ public class UISelectionPanel : MonoBehaviour
         if (_originalRoot) _originalRoot.gameObject.SetActive(true);
         modelRoot = _originalRoot;
 
+        if (modelMenuPanel) modelMenuPanel.SetModelRoot(_originalRoot, keepOpenState: true);
+
         // החזר rig למצב שמור
         if (orbitRig && _orbitOriginalSaved)
         {
-            orbitRig.target       = _originalOrbitTarget;
+            orbitRig.target = _originalOrbitTarget;
             orbitRig.targetOffset = _originalOrbitTargetOffset;
             orbitRig.ResetView();
         }
@@ -296,6 +300,7 @@ public class UISelectionPanel : MonoBehaviour
 
         // 8) כיוון מצלמה
         modelRoot = container;
+        if (modelMenuPanel) modelMenuPanel.SetModelRoot(container, keepOpenState: true);
         if (orbitRig)
         {
             orbitRig.target = _isoPivot;
