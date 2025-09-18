@@ -10,9 +10,9 @@ public class OrbitCameraRig : MonoBehaviour
     public Vector3 targetOffset = Vector3.zero;
 
     [Header("Distance / Zoom")]
-    public float distance = 6f;
-    public float minDistance = 2f;
-    public float maxDistance = 20f;
+    public float distance = 30f;
+    public float minDistance = 20f;
+    public float maxDistance = 50f;
     [Tooltip("מהירות זום (גלגלת/+/−)")]
     public float zoomSpeed = 1.2f;
     public bool zoomWithPlusMinus = true;
