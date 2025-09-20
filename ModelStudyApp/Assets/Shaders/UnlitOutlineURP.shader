@@ -1,65 +1,55 @@
-Shader "Custom/UnlitOutlineURP"
+Shader "Custom/URP_OutlineOnly"
 {
     Properties
     {
-        [HDR] _OutlineColor ("Outline Color", Color) = (0, 1, 1, 1)
-        _OutlineThickness ("Outline Thickness (world units)", Float) = 0.005
-        _ZBias ("Z Bias", Float) = -1.0
-        _Alpha ("Alpha", Range(0,1)) = 1.0
-        _HDRIntensity ("HDR Intensity (Bloom Boost)", Float) = 4.0
+        [HDR]_OutlineColor("Outline Color", Color) = (0,1,1,1)
+        _ThicknessWorld("Outline Thickness (world units)", Float) = 0.02
+        _Alpha("Alpha", Range(0,1)) = 1
+        _HDRIntensity("HDR Intensity", Float) = 3
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent+10" }
-        LOD 100
+        Tags{ "RenderType"="Transparent" "Queue"="Transparent+10" }
 
         Pass
         {
             Name "OUTLINE"
-            Tags { "LightMode"="UniversalForward" }
+            Tags{ "LightMode"="UniversalForward" }
 
             Cull Front
             ZWrite Off
-            ZTest LEqual
-            Offset [_ZBias], [_ZBias]
+            ZTest LEqual          // 🔑 מצייר אחרי המודל: עובר רק היכן שאנחנו קרובים/קרובים-יותר מהרקע
             Blend SrcAlpha OneMinusSrcAlpha
+            Offset 0, -1
 
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            struct Attributes {
-                float4 positionOS : POSITION;
-                float3 normalOS   : NORMAL;
-            };
-            struct Varyings {
-                float4 positionHCS : SV_POSITION;
-            };
+            struct A { float4 positionOS:POSITION; float3 normalOS:NORMAL; };
+            struct V { float4 positionHCS:SV_POSITION; };
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _OutlineColor;
-                float  _OutlineThickness;
-                float  _ZBias;
+                float  _ThicknessWorld;
                 float  _Alpha;
                 float  _HDRIntensity;
             CBUFFER_END
 
-            Varyings vert (Attributes IN)
+            V vert(A IN)
             {
-                Varyings OUT;
-
+                V O;
                 float3 posWS = TransformObjectToWorld(IN.positionOS.xyz);
                 float3 nWS   = normalize(TransformObjectToWorldNormal(IN.normalOS));
-                posWS += nWS * _OutlineThickness;
-
-                OUT.positionHCS = TransformWorldToHClip(posWS);
-                return OUT;
+                posWS += nWS * _ThicknessWorld;
+                O.positionHCS = TransformWorldToHClip(posWS);
+                return O;
             }
 
-            half4 frag (Varyings IN) : SV_Target
+            half4 frag(V IN):SV_Target
             {
-                float3 rgb = _OutlineColor.rgb * _HDRIntensity; // דחיפה ל-HDR
+                float3 rgb = _OutlineColor.rgb * _HDRIntensity;
                 return half4(rgb, _Alpha);
             }
             ENDHLSL

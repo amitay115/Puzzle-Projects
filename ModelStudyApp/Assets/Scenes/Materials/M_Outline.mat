@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3010
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -99,7 +99,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _HDRIntensity: 2.5
+    - _HDRIntensity: 2.92
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _OutlineThickness: 0.01
@@ -112,6 +112,8 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _ThicknessPixels: 0.44
+    - _ThicknessWorld: 0.005
     - _WorkflowMode: 1
     - _ZBias: -1.71
     - _ZWrite: 1

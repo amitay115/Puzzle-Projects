@@ -9,12 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: c483df1d7972c44c2a73978c77d8ebde
   - enabled: 1
-    path: Assets/Scenes/UI360viewer.unity
-    guid: 223c8e86d7f234f5f8c65ac9873969ab
-  - enabled: 1
     path: Assets/Scenes/Deployment.unity
     guid: 02a8ece31cd034fd29d5c4c6a6ba20f8
   - enabled: 1
     path: Assets/Scenes/Packup.unity
     guid: 5c04664097fce4213950d91570785509
+  - enabled: 1
+    path: Assets/Scenes/SRoverview.unity
+    guid: 496cde59de05446aaacbc71d846a01cb
   m_configObjects: {}
