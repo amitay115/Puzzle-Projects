@@ -6,7 +6,8 @@ using TMPro;
 public class UISelectionPanel : MonoBehaviour
 {
     [Header("Panels")]
-    public ModelMenuPanel modelMenuPanel; // גרור באינספקטור
+    public ModelMenuPanel modelMenuPanel;
+
     // ===== Refs =====
     [Header("Refs")]
     [Tooltip("גרור את HoverHighlightManager שעל המצלמה")]
@@ -30,8 +31,13 @@ public class UISelectionPanel : MonoBehaviour
 
     [Tooltip("ילד outline שנוצר ע\"י ה-Highlightable")]
     [SerializeField] string outlineChildSuffix = ".__Outline";
-    [Tooltip("מחרוזת לזיהוי שיידר outline (למקרה שלא כילד נפרד)")]
-    [SerializeField] string outlineShaderNameContains = "UnlitOutlineURP";
+
+    [Tooltip("שמות השיידרים של האווטליין כמו שמופיעים בתוך הקבצים (Shader \"...\")")]
+    [SerializeField] string[] outlineShaderNames = new[]
+    {
+        "Custom/URP_OutlineOnly",
+        "Custom/UnlitOutlineURP"
+    };
 
     // ===== Isolate / Placement =====
     [Header("Isolate Placement")]
@@ -39,9 +45,35 @@ public class UISelectionPanel : MonoBehaviour
     public float floorY = 0f;
     public float placePadding = 0.02f;
 
+    // ===== Isolate Framing =====
+    [Header("Isolate Framing")]
+    [Tooltip("כמה מגובה המסך האובייקט יתפוס אחרי בידוד (0–1)")]
+    [Range(0.2f, 0.95f)] public float isolateScreenHeightFrac = 0.6f;
+
+    [Tooltip("במצב Auto: לבחור תמיד זווית אופקית בלבד (לא מלמעלה/למטה)")]
+    public bool autoHorizontalOnly = true;
+
+    [Tooltip("ציר אנכי עולמי (ברירת מחדל: Y)")]
+    public Vector3 worldUp = Vector3.up;
+
+    [Tooltip("זמן בלנד למעבר לתצוגה הממוסגרת")]
+    public float isolateViewBlend = 0.35f;
+
+    [Tooltip("כיוון ברירת מחדל אם אין ViewHint על האובייקט")]
+    public PreferredView defaultPreferredView = PreferredView.AutoBroadside;
+
+    [Tooltip("לאפשר רמז-כיוון על אובייקט/הורה (ViewHint)")]
+    public bool allowPerObjectViewHint = true;
+
+    [Tooltip("מרחק מינימלי של המצלמה מהאובייקט בבידוד")]
+    public float minIsolationDistance = 0.75f;
+
+    [Tooltip("פקטור בטיחות נוסף על החישוב (1.0–1.2 מומלץ)")]
+    [Range(1.0f, 1.5f)] public float distanceSafetyFactor = 1.1f;
+
     // ===== Internal state =====
-    Highlightable _currentSel;        // צילום מצב של הבחירה
-    Transform    _originalRoot;       // שורש המודל המקורי
+    Highlightable _currentSel;
+    Transform    _originalRoot;
     bool         _isolated;
     Transform    _isoPivot;
 
@@ -49,7 +81,6 @@ public class UISelectionPanel : MonoBehaviour
     Vector3   _originalOrbitTargetOffset;
     bool      _orbitOriginalSaved;
 
-    // שורשי בידוד שנוצרו (בד"כ אחד)
     readonly List<Transform> _isoRoots = new();
 
     // קאש שקיפות פר Renderer
@@ -62,14 +93,12 @@ public class UISelectionPanel : MonoBehaviour
     }
     readonly Dictionary<Renderer, FadeCache> _fadeMap = new();
 
-    // ===== Gating colliders (לפי משפחה לוגית) =====
-    // האב שהקוליידרים שלו כובו כי היה שקוף ונבחר (או אחד מצאצאיו נבחר)
+    // ===== Gating colliders =====
     Highlightable _gatedRootHL;
-    // מה בדיוק כיבינו (כדי להחזיר רק אותם)
     struct GateRecord { public Collider col; }
     readonly List<GateRecord> _gated = new();
 
-    // אינדקס מהיר: menuId -> Highlightable (כדי לזהות “בן לוגי”)
+    // אינדקס מהיר: menuId -> Highlightable
     readonly Dictionary<string, Highlightable> _hlByMenuId = new();
 
     // ===== Lifecycle =====
@@ -90,7 +119,6 @@ public class UISelectionPanel : MonoBehaviour
 
         if (!_originalRoot) _originalRoot = modelRoot;
 
-        // שמירת מצב מצלמה פעם אחת
         if (orbitRig && !_orbitOriginalSaved)
         {
             _originalOrbitTarget       = orbitRig.target;
@@ -98,14 +126,13 @@ public class UISelectionPanel : MonoBehaviour
             _orbitOriginalSaved        = true;
         }
 
-        // מאזיני כפתורים (ללא כפילויות)
         if (btnFull)        { btnFull.onClick.RemoveAllListeners();        btnFull.onClick.AddListener(OnFullClicked); }
         if (btnTransparent) { btnTransparent.onClick.RemoveAllListeners(); btnTransparent.onClick.AddListener(OnTransparentClicked); }
         if (btnIsolate)     { btnIsolate.onClick.RemoveAllListeners();     btnIsolate.onClick.AddListener(OnIsolateClicked); }
 
-        BuildHighlightableIndex();   // לבדיקות "בן לוגי"
+        BuildHighlightableIndex();
         RefreshUI(_currentSel);
-        UpdateColliderGateForSelection(); // סנכרון ראשוני
+        UpdateColliderGateForSelection();
     }
 
     void OnDisable()
@@ -114,7 +141,7 @@ public class UISelectionPanel : MonoBehaviour
         if (manager) manager.OnSelectionChanged -= OnSelectionChanged;
     }
 
-    void Update() // גיבוי: אם משום מה האירוע לא נורה
+    void Update()
     {
         if (!manager) return;
         var sel = manager.GetSelected();
@@ -140,29 +167,22 @@ public class UISelectionPanel : MonoBehaviour
         if (selectedNameText) selectedNameText.text = hasSel ? h.name : "(no selection)";
         if (btnTransparent)   btnTransparent.interactable = hasSel;
         if (btnIsolate)       btnIsolate.interactable     = hasSel;
-        // Full תמיד פעיל
     }
 
     // ===== FULL =====
     public void OnFullClicked()
     {
-        // שחרר gating
         UngateColliders();
         _gatedRootHL = null;
 
-        // החזר שקיפויות
         RestoreAllTransparency();
+        DestroyAllIsoRoots();
 
-        // בטל בידוד אם פעיל – השמד את כל שורשי הבידוד
-        DestroyAllIsoRoots();   // מאפס גם _isolated ו-_isoPivot
-
-        // החזר את המודל המקורי לתצוגה
         if (_originalRoot) _originalRoot.gameObject.SetActive(true);
         modelRoot = _originalRoot;
 
         if (modelMenuPanel) modelMenuPanel.SetModelRoot(_originalRoot, keepOpenState: true);
 
-        // החזר rig למצב שמור
         if (orbitRig && _orbitOriginalSaved)
         {
             orbitRig.target = _originalOrbitTarget;
@@ -170,11 +190,8 @@ public class UISelectionPanel : MonoBehaviour
             orbitRig.ResetView();
         }
 
-        // נקה בחירה + UI
         manager?.ClearSelection();
         RefreshUI(null);
-
-        // בנה מחדש אינדקס (למקרה שהמודל הוחזר/הוחלף)
         BuildHighlightableIndex();
     }
 
@@ -184,39 +201,43 @@ public class UISelectionPanel : MonoBehaviour
         var sel = _currentSel ?? (manager ? manager.GetSelected() : null);
         if (!sel) return;
 
+        Highlightable.ClearAllHovers();
+
         var all = sel.GetComponentsInChildren<Renderer>(includeInactive: true);
         foreach (var r in all)
         {
             if (!IsRenderableCandidate(r)) continue;
-            if (IsOutlineRenderer(r))      continue; // לא נוגעים בחומרי ה-outline עצמם
+            if (IsOutlineRenderer(r))      continue;
             TryToggleRendererTransparency(r, transparentAlpha);
         }
 
-        // שליטה באאוטליין כשהמודל שקוף
-        SetOutlineEnabled(sel.transform, keepOutlineOnTransparent);
+        bool blockOutline = !keepOutlineOnTransparent;
+        var highs = sel.GetComponentsInChildren<Highlightable>(true);
+        for (int i = 0; i < highs.Length; i++)
+            highs[i].SetOutlineBlocked(blockOutline);
 
-        // מאחר שהשקיפות השתנתה – עדכן gating של הקוליידרים
         UpdateColliderGateForSelection();
     }
 
     // ===== ISOLATE =====
     public void OnIsolateClicked()
     {
-        // לפני ניתוק/שכפול – אל תשאיר קוליידרים כבויים
+        Highlightable.ClearAllHovers();
+        Highlightable.ClearAllSelected();
+        Highlightable.ClearAllOutlinesAndFlags();
+
         UngateColliders();
         _gatedRootHL = null;
 
         var sel = _currentSel ?? (manager ? manager.GetSelected() : null);
         if (!sel) return;
 
-        // אם כבר היינו בבידוד – מחיקה נקייה של שורשים קודמים
         if (_isolated) DestroyAllIsoRoots();
 
-        // 1) בנה אוסף מקורות (הנבחר + also מה-Highlightable)
+        // 1) מקורות (הנבחר + also)
         var sources = CollectIsolateSources(sel);
         if (sources == null || sources.Count == 0) return;
 
-        // ודא שלפחות אחד מכיל Renderer
         bool anyRenderable = false;
         for (int i = 0; i < sources.Count; i++)
         {
@@ -230,10 +251,10 @@ public class UISelectionPanel : MonoBehaviour
             return;
         }
 
-        // 2) כיבוי המודל המקורי
+        // 2) כיבוי המקור
         if (_originalRoot) _originalRoot.gameObject.SetActive(false);
 
-        // 3) קונטיינר בידוד – נבנה לפי הורה של הפריט הראשון
+        // 3) קונטיינר
         var first = sources[0];
         Transform p = first ? first.parent : null;
 
@@ -248,19 +269,18 @@ public class UISelectionPanel : MonoBehaviour
         {
             container.position = p.position;
             container.rotation = p.rotation;
-            container.localScale = p.lossyScale; // world-scale של ההורה
+            container.localScale = p.lossyScale;
         }
 
-        // נעקוב אחרי השורש כדי למחוק ב-Full
         _isoRoots.Add(container);
 
-        // 4) Pivot למבט ה־Orbit
+        // 4) Pivot
         _isoPivot = new GameObject(first.name + "_Pivot").transform;
         _isoPivot.SetParent(container, false);
         _isoPivot.localPosition = Vector3.zero;
         _isoPivot.localRotation = Quaternion.identity;
 
-        // 5) שכפול כל מקורות החבילה אל תוך הקונטיינר
+        // 5) שכפול
         for (int i = 0; i < sources.Count; i++)
         {
             var src = sources[i];
@@ -271,9 +291,8 @@ public class UISelectionPanel : MonoBehaviour
             ct.SetParent(container, worldPositionStays: false);
             ct.localPosition = src.localPosition;
             ct.localRotation = src.localRotation;
-            ct.localScale = src.localScale;
+            ct.localScale    = src.localScale;
 
-            // ניקוי Outline/Highlightable + החזרת חומרים לאטומים
             StripOutlineChildrenOnly(ct);
             EnsureRenderersVisibleOpaque(ct);
         }
@@ -282,7 +301,7 @@ public class UISelectionPanel : MonoBehaviour
         SetLayerRecursively(container, LayerMask.NameToLayer("Default"));
         container.gameObject.SetActive(true);
 
-        // 7) מרכז לאפס והרם מעל הרצפה (לפי הגדרות)
+        // 7) מרכז+רצפה
         bool hasR; var b = ComputeWorldBounds(container, out hasR);
         if (hasR)
         {
@@ -298,33 +317,39 @@ public class UISelectionPanel : MonoBehaviour
             SetIsoPivotToBoundsCenter(container);
         }
 
-        // 8) כיוון מצלמה
+        // 8) פריימינג חכם + רמזים
         modelRoot = container;
         if (modelMenuPanel) modelMenuPanel.SetModelRoot(container, keepOpenState: true);
+
         if (orbitRig)
         {
             orbitRig.target = _isoPivot;
             orbitRig.targetOffset = Vector3.zero;
-            orbitRig.ResetView();
+
+            bool hasR2; var worldB = ComputeWorldBounds(container, out hasR2);
+
+            // מצא מקור לרמז (אם קיים) – מחפש על אחד המקורות או בהוריהם
+            Transform hintSource = allowPerObjectViewHint ? FindHintSource(sources) : null;
+
+            if (hasR2) FrameIsolated(container, worldB, hintSource);
+            else       orbitRig.ResetView();
         }
         else
         {
             PlaceCameraToSee(container);
         }
 
-        // 9) בטל בחירה כדי שהשיידר לא יחזור
+        // 9) נקה
         manager?.ClearSelection();
+        Highlightable.ClearAllHovers();
+        Highlightable.ClearAllOutlinesAndFlags();
 
         _isolated = true;
         RefreshUI(null);
-        // כעת modelRoot מצביע על הקונטיינר של הבידוד – נבנה אינדקס חדש למשפחה הלוגית בתוך הבידוד
         BuildHighlightableIndex();
-
-        // בידוד מציג מודל חלופי – אם תרצה לבחור שם אובייקטים, זה מודל without Highlightable
-        // לכן אין צורך לאנדקס כאן. נחזור לאינדוקס כשנחזור ל-Full.
     }
 
-    // ===== Colliders gating (לוגיקת “משפחה”) =====
+    // ===== Colliders gating =====
     void BuildHighlightableIndex()
     {
         _hlByMenuId.Clear();
@@ -346,7 +371,6 @@ public class UISelectionPanel : MonoBehaviour
         if (!parent || !other) return false;
         if (parent == other) return true;
 
-        // טיפוס לוגי לפי parentMenuId
         string pid = other.parentMenuId;
         int guard = 0;
         while (!string.IsNullOrEmpty(pid) && guard++ < 64)
@@ -359,14 +383,12 @@ public class UISelectionPanel : MonoBehaviour
             else break;
         }
 
-        // גיבוי היררכי אם אין תגיות מלאות
         if (other.transform && parent.transform && other.transform.IsChildOf(parent.transform))
             return true;
 
         return false;
     }
 
-    // מסיר רק את אובייקטי ה-Outline שכבר קיימים כילדים, מבלי לגעת ב-Highlightable
     static void StripOutlineChildrenOnly(Transform root)
     {
         var toDelete = new List<GameObject>();
@@ -383,28 +405,24 @@ public class UISelectionPanel : MonoBehaviour
     {
         var sel = _currentSel;
 
-        // אם יש לנו כרגע אב מגודר:
         if (_gatedRootHL)
         {
             bool rootStillTransparent = IsTransformTransparent(_gatedRootHL.transform);
 
-            // אם הבחירה עדיין באותה משפחה, והאב עדיין שקוף – נשאיר מגודר
             if (sel && rootStillTransparent && IsSameFamilyLogical(_gatedRootHL, sel))
             {
-                // do nothing – משאירים את הקוליידרים כבויים
+                // השאר כבוי
             }
             else
             {
-                // אחרת – נשחרר
                 UngateColliders();
                 _gatedRootHL = null;
             }
         }
 
-        // אם אין כרגע אב מגודר, והבחירה שקופה – נתחיל לגדר עליה
         if (!_gatedRootHL && sel && IsTransformTransparent(sel.transform))
         {
-            GateOwnColliders(sel.transform); // מכבה רק קוליידרים היושבים על ה-Transform של הנבחר
+            GateOwnColliders(sel.transform);
             _gatedRootHL = sel;
         }
     }
@@ -412,7 +430,7 @@ public class UISelectionPanel : MonoBehaviour
     void GateOwnColliders(Transform t)
     {
         if (!t) return;
-        var cols = t.GetComponents<Collider>(); // רק על העצם עצמו (לא על הילדים)
+        var cols = t.GetComponents<Collider>();
         for (int i = 0; i < cols.Length; i++)
         {
             var c = cols[i];
@@ -442,22 +460,35 @@ public class UISelectionPanel : MonoBehaviour
         return true;
     }
 
+    bool MatchesOutlineShader(string shaderName)
+    {
+        if (string.IsNullOrEmpty(shaderName) || outlineShaderNames == null) return false;
+        for (int i = 0; i < outlineShaderNames.Length; i++)
+        {
+            var pattern = outlineShaderNames[i];
+            if (!string.IsNullOrEmpty(pattern) &&
+                shaderName.IndexOf(pattern, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                return true;
+        }
+        return false;
+    }
+
     bool IsOutlineRenderer(Renderer r)
     {
+        if (!r) return false;
+
         if (!string.IsNullOrEmpty(outlineChildSuffix) && r.gameObject.name.EndsWith(outlineChildSuffix))
             return true;
 
         var mats = r.sharedMaterials;
-        if (mats != null)
+        if (mats == null) return false;
+
+        for (int i = 0; i < mats.Length; i++)
         {
-            for (int i = 0; i < mats.Length; i++)
-            {
-                var m = mats[i];
-                if (!m) continue;
-                var s = m.shader ? m.shader.name : "";
-                if (!string.IsNullOrEmpty(outlineShaderNameContains) && s.Contains(outlineShaderNameContains))
-                    return true;
-            }
+            var m = mats[i];
+            if (!m || !m.shader) continue;
+            if (MatchesOutlineShader(m.shader.name))
+                return true;
         }
         return false;
     }
@@ -466,7 +497,6 @@ public class UISelectionPanel : MonoBehaviour
     {
         if (!root) return;
 
-        // ילדים מיוחדים של outline שנוצרו ע"י Highlightable
         if (!string.IsNullOrEmpty(outlineChildSuffix))
         {
             var trs = root.GetComponentsInChildren<Transform>(true);
@@ -475,20 +505,18 @@ public class UISelectionPanel : MonoBehaviour
                     trs[i].gameObject.SetActive(enable);
         }
 
-        // בנוסף: אם outline הוא חומר על אותו Renderer
         var rends = root.GetComponentsInChildren<Renderer>(true);
         for (int i = 0; i < rends.Length; i++)
         {
             var r = rends[i];
             if (!r) continue;
             var mats = r.sharedMaterials; if (mats == null) continue;
+
             bool looksLikeOutline = false;
             for (int m = 0; m < mats.Length; m++)
             {
-                var mm = mats[m]; if (!mm) continue;
-                var s = mm.shader ? mm.shader.name : "";
-                if (!string.IsNullOrEmpty(outlineShaderNameContains) && s.Contains(outlineShaderNameContains))
-                { looksLikeOutline = true; break; }
+                var mm = mats[m]; if (!mm || !mm.shader) continue;
+                if (MatchesOutlineShader(mm.shader.name)) { looksLikeOutline = true; break; }
             }
             if (looksLikeOutline) r.enabled = enable;
         }
@@ -496,7 +524,6 @@ public class UISelectionPanel : MonoBehaviour
 
     bool TryToggleRendererTransparency(Renderer r, float alpha)
     {
-        // אם יש קאש — החלפה הלוך/חזור
         if (_fadeMap.TryGetValue(r, out var cache))
         {
             cache.isTransparent = !cache.isTransparent;
@@ -516,9 +543,8 @@ public class UISelectionPanel : MonoBehaviour
             var m = instanced[i];
             if (!m) continue;
 
-            // דלג על outline
             var shaderName = m.shader ? m.shader.name : "";
-            if (!string.IsNullOrEmpty(outlineShaderNameContains) && shaderName.Contains(outlineShaderNameContains))
+            if (MatchesOutlineShader(shaderName))
                 continue;
 
             if (MakeURPLitTransparentSafe(m, alpha, writeDepthOnTransparent))
@@ -527,11 +553,10 @@ public class UISelectionPanel : MonoBehaviour
 
         if (!changedAny)
         {
-            r.sharedMaterials = shared; // לא שינינו – אל תשאיר instanced
+            r.sharedMaterials = shared;
             return false;
         }
 
-        // שמור קאש והחל שקיפות
         _fadeMap[r] = new FadeCache
         {
             r = r,
@@ -553,9 +578,7 @@ public class UISelectionPanel : MonoBehaviour
         if (hasSurface) m.SetFloat("_Surface", 1f); // Transparent
         if (m.HasProperty("_SrcBlend")) m.SetFloat("_SrcBlend",  (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
         if (m.HasProperty("_DstBlend")) m.SetFloat("_DstBlend",  (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-
-        // הטריק: גם בשקיפות משאירים כתיבת עומק כדי שה-outline (עם ZTest) לא ימלא את פני השטח
-        if (m.HasProperty("_ZWrite")) m.SetFloat("_ZWrite", forceZWrite ? 1f : 0f);
+        if (m.HasProperty("_ZWrite"))   m.SetFloat("_ZWrite", forceZWrite ? 1f : 0f);
 
         m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
         m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
@@ -568,13 +591,11 @@ public class UISelectionPanel : MonoBehaviour
         {
             var c = m.GetColor("_Color");     c.a = Mathf.Clamp01(alpha); m.SetColor("_Color", c);
         }
-
         return true;
     }
 
     void RestoreAllTransparency()
     {
-        // לפני החזרת חומרים – שחרר gating אם היה
         UngateColliders();
         _gatedRootHL = null;
 
@@ -583,10 +604,8 @@ public class UISelectionPanel : MonoBehaviour
             var r = kv.Key; var cache = kv.Value;
             if (!r) continue;
 
-            // החזר חומרים מקוריים
             try { r.sharedMaterials = cache.originalShared; } catch {}
 
-            // נקה עותקים
             if (cache.transparentInstanced != null)
             {
                 for (int i = 0; i < cache.transparentInstanced.Length; i++)
@@ -633,6 +652,22 @@ public class UISelectionPanel : MonoBehaviour
             }
         }
         return list;
+    }
+
+    /// <summary>מעדיף מקור שיש עליו/על אביו ViewHint.</summary>
+    Transform FindHintSource(List<Transform> sources)
+    {
+        if (sources == null) return null;
+
+        // חפש קודם מקור שיש לו ViewHint בעצמו או על ההורה
+        for (int i = 0; i < sources.Count; i++)
+        {
+            var t = sources[i];
+            if (!t) continue;
+            if (t.GetComponentInParent<ViewHint>()) return t;
+        }
+        // אם אין רמז מפורש – נחזיר את הראשון (לצורך Local* אם תבחר ידנית)
+        return sources.Count > 0 ? sources[0] : null;
     }
 
     static void StripOutlineAndHighlightable(Transform root)
@@ -729,7 +764,6 @@ public class UISelectionPanel : MonoBehaviour
 
     void DestroyAllIsoRoots()
     {
-        // במקרה שהפכנו פריטים לשקופים בזמן בידוד – תחזיר לפני מחיקה
         RestoreAllTransparency();
 
         for (int i = 0; i < _isoRoots.Count; i++)
@@ -738,5 +772,184 @@ public class UISelectionPanel : MonoBehaviour
         _isoRoots.Clear();
         _isoPivot  = null;
         _isolated  = false;
+    }
+
+    // ===================== פריימינג חכם =====================
+    Bounds ComputeLocalBounds(Transform root)
+    {
+        var inv = root.worldToLocalMatrix;
+        bool init = false;
+        Bounds lb = default;
+
+        var rends = root.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < rends.Length; i++)
+        {
+            var r = rends[i]; if (!r) continue;
+            var b = r.bounds;
+            Vector3 c = b.center;
+            Vector3 e = b.extents;
+
+            for (int k = 0; k < 8; k++)
+            {
+                var corner = new Vector3(
+                    c.x + e.x * ((k & 1) != 0 ? 1f : -1f),
+                    c.y + e.y * ((k & 2) != 0 ? 1f : -1f),
+                    c.z + e.z * ((k & 4) != 0 ? 1f : -1f)
+                );
+                var local = inv.MultiplyPoint3x4(corner);
+                if (!init) { lb = new Bounds(local, Vector3.zero); init = true; }
+                else lb.Encapsulate(local);
+            }
+        }
+
+        if (!init) lb = new Bounds(root.InverseTransformPoint(root.position), Vector3.one * 0.1f);
+        return lb;
+    }
+
+    Vector3 FindPreferredViewDirWorld(Transform container, Transform source, Bounds localBounds)
+    {
+        PreferredView pref = defaultPreferredView;
+
+        if (allowPerObjectViewHint && source)
+        {
+            var hint = source.GetComponentInParent<ViewHint>();
+            if (hint) pref = hint.preferred;
+        }
+
+        if (pref == PreferredView.AutoBroadside)
+        {
+            if (autoHorizontalOnly)
+                return AutoBroadsideHorizontal(container, localBounds, worldUp); // ← חדש: רק אופקי
+            // אחרת: ההתנהגות הקודמת (גם Y מותר)
+            Vector3 ext = localBounds.extents;
+            float ax = ext.x, ay = ext.y, az = ext.z;
+
+            Vector3 dirLocal;
+            if      (ax <= ay && ax <= az) dirLocal = Vector3.left;   // -X
+            else if (ay <= ax && ay <= az) dirLocal = Vector3.down;   // -Y
+            else                           dirLocal = Vector3.back;   // -Z
+
+            return container.TransformDirection(dirLocal).normalized;
+        }
+        else
+        {
+            Vector3 dirLocal = Vector3.back;
+            switch (pref)
+            {
+                case PreferredView.LocalXPos: dirLocal = Vector3.right;   break;
+                case PreferredView.LocalXNeg: dirLocal = Vector3.left;    break;
+                case PreferredView.LocalYPos: dirLocal = Vector3.up;      break;
+                case PreferredView.LocalYNeg: dirLocal = Vector3.down;    break;
+                case PreferredView.LocalZPos: dirLocal = Vector3.forward; break;
+                case PreferredView.LocalZNeg: dirLocal = Vector3.back;    break;
+            }
+            return container.TransformDirection(dirLocal).normalized;
+        }
+    }
+
+    Vector3 AutoBroadsideHorizontal(Transform container, Bounds localBounds, Vector3 worldUpDir)
+    {
+        // נרמל worldUp
+        if (worldUpDir.sqrMagnitude < 1e-6f) worldUpDir = Vector3.up;
+        worldUpDir = worldUpDir.normalized;
+
+        // בחר ציר “דק” רק בין X/Z (בלי Y בכלל)
+        Vector3 ext = localBounds.extents;
+        bool useX = ext.x <= ext.z;
+
+        // כיוון אופקי של המצלמה (להקטין קפיצות כיוון)
+        Vector3 camHoriz = Vector3.forward;
+        if (Camera.main)
+        {
+            var cf = Vector3.ProjectOnPlane(Camera.main.transform.forward, worldUpDir);
+            if (cf.sqrMagnitude > 1e-6f) camHoriz = cf.normalized;
+        }
+
+        // מועמדים: +/-X או +/-Z, מקרינים למישור האופקי ובוחרים את הדוט הכי גדול מול camHoriz
+        Vector3[] candLocal = useX
+            ? new[] { Vector3.right, Vector3.left }
+            : new[] { Vector3.forward, Vector3.back };
+
+        Vector3 best = Vector3.zero;
+        float bestDot = -999f;
+
+        for (int i = 0; i < candLocal.Length; i++)
+        {
+            var w = container.TransformDirection(candLocal[i]);
+            w = Vector3.ProjectOnPlane(w, worldUpDir);
+            float mag = w.magnitude;
+            if (mag < 1e-6f) continue;
+            w /= mag;
+
+            float d = Vector3.Dot(w, camHoriz);
+            if (d > bestDot) { bestDot = d; best = w; }
+        }
+
+        if (best.sqrMagnitude < 1e-6f)
+        {
+            // נפילה בטוחה: קח -forward של הקונטיינר, הקרן אופקי
+            var w = Vector3.ProjectOnPlane(-container.forward, worldUpDir);
+            if (w.sqrMagnitude < 1e-6f) w = Vector3.ProjectOnPlane(Vector3.forward, worldUpDir);
+            return w.normalized;
+        }
+
+        return best.normalized;
+    }
+
+    float ComputeDistanceForFraming(Camera cam, Bounds worldBounds, float targetScreenHeightFrac, float minDistance, float safetyFactor)
+    {
+        // מגביל את טווח המילוי (גובה על המסך)
+        targetScreenHeightFrac = Mathf.Clamp(targetScreenHeightFrac, 0.2f, 0.95f);
+
+        // משתמשים ב"רדיוס" כולל של האובייקט (extents.magnitude) כדי להימנע מתת־הערכה
+        float radius = Mathf.Max(1e-4f, worldBounds.extents.magnitude);
+
+        // גיאומטריית FOV אנכית
+        float halfTan = Mathf.Tan(0.5f * cam.fieldOfView * Mathf.Deg2Rad);
+
+        // מרחק שמבטיח שהאובייקט יכנס בנוחות בהתאם ל־targetScreenHeightFrac
+        float dist = radius / (halfTan * Mathf.Max(0.05f, targetScreenHeightFrac));
+
+        // פקטור בטיחות קטן למנוע חיתוכים
+        dist *= Mathf.Max(1.0f, safetyFactor);
+
+        // מרחק מינימלי גלובלי/פר־אובייקט
+        return Mathf.Max(dist, Mathf.Max(0.01f, minDistance));
+    }
+
+    void FrameIsolated(Transform container, Bounds worldBounds, Transform sourceForHint)
+    {
+        var cam = Camera.main; 
+        if (!cam || !orbitRig) { orbitRig.ResetView(); return; }
+
+        Bounds localB = ComputeLocalBounds(container);
+        Vector3 dirW = FindPreferredViewDirWorld(container, sourceForHint, localB);
+        if (dirW.sqrMagnitude < 1e-6f) dirW = -container.forward;
+
+        Vector3 focus = worldBounds.center;
+
+        // מינימום גלובלי
+        float minDist = Mathf.Max(0.01f, minIsolationDistance);
+
+        
+
+        // חישוב מרחק יציב
+        float dist = ComputeDistanceForFraming(
+            cam, 
+            worldBounds, 
+            isolateScreenHeightFrac, 
+            minDist, 
+            distanceSafetyFactor
+        );
+
+        Vector3 camPos = focus - dirW * dist;
+        Quaternion camRot = Quaternion.LookRotation(focus - camPos, Vector3.up);
+
+        var temp = new GameObject("__TempIsoView").transform;
+        temp.position = camPos;
+        temp.rotation = camRot;
+
+        orbitRig.SetView(temp, Mathf.Max(0f, isolateViewBlend));
+        Destroy(temp.gameObject, Mathf.Max(0.1f, isolateViewBlend + 0.1f));
     }
 }

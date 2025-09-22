@@ -4,6 +4,14 @@ using UnityEngine.EventSystems;
 
 public class OrbitCameraRig : MonoBehaviour
 {
+    [Header("Auto Framing")]
+    [Tooltip("אחוז מילוי של העצם בתוך הפריים (0.5 = חצי מהגובה/הרוחב)")]
+    [Range(0.3f, 0.95f)] public float frameFill = 0.65f;
+    [Tooltip("ריווח/פדינג בעולם (מטרים) מעבר לחישוב המינימלי")]
+    public float framePaddingWorld = 0.0f;
+    [Tooltip("ליישם מיידית (בלי דמפ) כשקוראים ל-FrameBounds(immediate:true)")]
+    public bool frameImmediateDefault = false;
+
     [Header("Target (Pivot)")]
     [Tooltip("פיבוט/מרכז המודל (רצוי ילד ריק במרכז המודל)")]
     public Transform target;
@@ -456,7 +464,7 @@ public class OrbitCameraRig : MonoBehaviour
         UpdateCameraImmediate();
         _lastCamPos = transform.position;
     }
-    
+
     bool IsPointerOverUI()
     {
         if (!lockWhenOverUI) return false;    // נשתמש גם בדגל הקיים שלך
@@ -472,5 +480,43 @@ public class OrbitCameraRig : MonoBehaviour
                 return true;
 
         return false;
+    }
+    
+    public void FrameBounds(Bounds b, float? fillOverride = null, float? paddingOverride = null, bool? immediate = null)
+    {
+        var cam = GetComponent<Camera>();
+        if (!cam) cam = Camera.main;
+        if (!cam) return;
+
+        float fill = Mathf.Clamp01(fillOverride ?? frameFill);
+        float pad  = Mathf.Max(0f, paddingOverride ?? framePaddingWorld);
+        bool imm   = immediate ?? frameImmediateDefault;
+
+        // מרכז הפריים = המטרה (target+offset). אנחנו מניחים שכבר עדכנו target/offset מבחוץ.
+        // גובה/רוחב שצריך להכיל:
+        Vector3 ext = b.extents;                  // חצי-גדלים
+        float halfHeight = ext.y + pad;
+        float halfWidth  = ext.x + pad;
+
+        // FoV אנכי ואופקי:
+        float vFov = cam.fieldOfView * Mathf.Deg2Rad;
+        float hFov = 2f * Mathf.Atan(Mathf.Tan(vFov * 0.5f) * cam.aspect);
+
+        // מרחק מינימלי כדי להכיל לפי ציר אנכי/אופקי (חצי-גובה/חצי-רוחב):
+        float distV = halfHeight / Mathf.Max(1e-4f, Mathf.Tan(vFov * 0.5f) * fill);
+        float distH = halfWidth  / Mathf.Max(1e-4f, Mathf.Tan(hFov * 0.5f) * fill);
+        float needed = Mathf.Max(distV, distH);
+
+        // גבולות הריג:
+        needed = Mathf.Clamp(needed, minDistance, maxDistance);
+
+        _targetDist = needed;
+        if (imm)
+        {
+            // החלה מיידית (ללא דמפ)
+            distance = _targetDist;
+            UpdateCameraImmediate();
+            _lastCamPos = transform.position;
+        }
     }
 }

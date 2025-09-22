@@ -4,6 +4,33 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class Highlightable : MonoBehaviour
 {
+    // ---------- NEW: רישום גלובלי ----------
+    static readonly HashSet<Highlightable> s_all = new();
+    void OnEnable()  { s_all.Add(this); }
+    void OnDestroy() { s_all.Remove(this); }
+
+    /// <summary>ניקוי כל מצבי ה-hover בכל הסצנה.</summary>
+    public static void ClearAllHovers()
+    {
+        foreach (var h in s_all) { if (h) h.SetHover(false); }
+    }
+    /// <summary>ניקוי כל מצבי ה-selected בכל הסצנה.</summary>
+    public static void ClearAllSelected()
+    {
+        foreach (var h in s_all) { if (h) h.SetSelected(false); }
+    }
+    /// <summary>כיבוי מוחלט: גם hover וגם selected וגם כיבוי אובייקטי outline.</summary>
+    public static void ClearAllOutlinesAndFlags()
+    {
+        foreach (var h in s_all)
+        {
+            if (!h) continue;
+            h._hover = h._selected = false;
+            h.SetPairsActive(false);
+        }
+    }
+
+    // ---------- השדות שלך (השארתי כמו אצלך) ----------
     [Header("Menu Hierarchy Tags")]
     public string menuId;
     public string menuLabel;
@@ -12,19 +39,16 @@ public class Highlightable : MonoBehaviour
 
     [Header("Outline")]
     public bool useOutline = true;
-    [Tooltip("Material משיידר ה-Outline שלך (Custom/URP_OutlineOnly או Custom/UnlitOutlineURP)")]
     public Material outlineMaterial;
     [Min(1f)] public float outlineShellScale = 1.0f;
 
     [Header("Smoothing")]
-    [Tooltip("מחליק נורמלים של מעטפת לפי מיקום קודקוד (180°). משמיד 'פירורי פנים'.")]
     public bool smoothOutlineNormals = true;
-    [Tooltip("Tolerance לקיבוץ קודקודים לפי מיקום (ביח' עולם). 1e-4 לרוב מספיק.")]
     public float smoothPositionEpsilon = 1e-4f;
 
     [Header("Hover Style")]
     public Color hoverColor = new(0f, 1f, 1f, 1f);
-    public float hoverThickness = 0.006f;     // world units
+    public float hoverThickness = 0.006f;
     [Range(0f,1f)] public float hoverAlpha = 1f;
     public float hoverZBias = -1.5f;
 
@@ -54,16 +78,27 @@ public class Highlightable : MonoBehaviour
     MaterialPropertyBlock _mpb;
     bool _built;
 
-    // IDs תואמים לשיידר
+    // ---------- NEW: חסם אווטליין ----------
+    // כשtrue – גם אם יש hover/selected לא נדליק את המעטפת.
+    bool _outlineBlocked;
+
+    // מאפשר ל-UI לכפות חסימה/שחרור של האווטליין (למשל בשקיפות)
+    public void SetOutlineBlocked(bool blocked)
+    {
+        _outlineBlocked = blocked;
+        if (blocked) SetPairsActive(false);
+        else Refresh(); // יפעיל לפי ה-hover/selected הקיימים
+    }
+
+    // IDs
     static readonly int _OutlineColorID = Shader.PropertyToID("_OutlineColor");
-    static readonly int _OutlineThickID = Shader.PropertyToID("_ThicknessWorld"); // חשוב!
+    static readonly int _OutlineThickID = Shader.PropertyToID("_ThicknessWorld");
     static readonly int _AlphaID        = Shader.PropertyToID("_Alpha");
-    static readonly int _ZBiasID        = Shader.PropertyToID("_ZBias");
 
     // URP DepthOnly
     static Material _depthOnlyMat;
 
-    // Cache לרשת חלקה (180°) לכל Mesh מקור
+    // Cache לרשת חלקה
     static readonly Dictionary<Mesh, Mesh> _smoothMeshCache = new();
 
     void Awake()
@@ -76,7 +111,7 @@ public class Highlightable : MonoBehaviour
             var sh = Shader.Find("Hidden/Universal Render Pipeline/DepthOnly");
             if (sh != null)
             {
-                _depthOnlyMat = new Material(sh) { renderQueue = 2450 }; // לפני Opaque/Outline
+                _depthOnlyMat = new Material(sh) { renderQueue = 2450 };
             }
         }
     }
@@ -94,17 +129,18 @@ public class Highlightable : MonoBehaviour
 
     void Refresh()
     {
-        bool active = (_hover || _selected) && useOutline && outlineMaterial != null;
+        bool wantsOutline = (_hover || _selected);
+        bool active = wantsOutline && useOutline && outlineMaterial != null && !_outlineBlocked;
 
-        _goalScale = active ? Mathf.Max(1f, hoverScale) : 1f;
+        _goalScale = wantsOutline ? Mathf.Max(1f, hoverScale) : 1f;
 
         if (!active) { SetPairsActive(false); return; }
         if (!_built) BuildPairs();
 
         // Selected > Hover
-        Color col; float thick; float a; float zb;
-        if (_selected) { col = selectedColor; thick = selectedThickness; a = selectedAlpha; zb = selectedZBias; }
-        else           { col = hoverColor;    thick = hoverThickness;  a = hoverAlpha;    zb = hoverZBias; }
+        Color col; float thick; float a;
+        if (_selected) { col = selectedColor; thick = selectedThickness; a = selectedAlpha; }
+        else           { col = hoverColor;    thick = hoverThickness;  a = hoverAlpha; }
 
         foreach (var p in _clones)
         {
@@ -116,7 +152,6 @@ public class Highlightable : MonoBehaviour
             _mpb.SetColor(_OutlineColorID, col);
             _mpb.SetFloat(_OutlineThickID, Mathf.Max(0f, thick));
             _mpb.SetFloat(_AlphaID, Mathf.Clamp01(a));
-            _mpb.SetFloat(_ZBiasID, zb);
             r.SetPropertyBlock(_mpb);
         }
 
@@ -125,24 +160,29 @@ public class Highlightable : MonoBehaviour
 
     void BuildPairs()
     {
-        var renderers = GetComponentsInChildren<MeshRenderer>(includeInactive: true);
-        foreach (var r in renderers)
+        if (_built) return;
+
+        // 1) MeshRenderer רגיל
+        var meshRenderers = GetComponentsInChildren<MeshRenderer>(true);
+        for (int i = 0; i < meshRenderers.Length; i++)
         {
+            var r = meshRenderers[i];
+            if (!r) continue;
             var mf = r.GetComponent<MeshFilter>();
             if (!mf || !mf.sharedMesh) continue;
 
-            // 1) DepthOnly – ליציבות עם חומרים שקופים
             GameObject depthGO = null;
             if (_depthOnlyMat != null)
             {
                 depthGO = new GameObject(r.gameObject.name + ".__DepthOnly");
+                depthGO.layer = r.gameObject.layer;
                 depthGO.transform.SetParent(r.transform, false);
 
                 var mfDepth = depthGO.AddComponent<MeshFilter>();
                 mfDepth.sharedMesh = mf.sharedMesh;
 
                 var mrDepth = depthGO.AddComponent<MeshRenderer>();
-                mrDepth.material = _depthOnlyMat;
+                mrDepth.sharedMaterial = _depthOnlyMat;
                 mrDepth.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 mrDepth.receiveShadows = false;
                 mrDepth.allowOcclusionWhenDynamic = false;
@@ -150,8 +190,8 @@ public class Highlightable : MonoBehaviour
                 depthGO.SetActive(false);
             }
 
-            // 2) Outline – משתמשים ברשת משוכפלת עם נורמלים מוחלקים 180°
             var outlineGO = new GameObject(r.gameObject.name + ".__Outline");
+            outlineGO.layer = r.gameObject.layer;
             outlineGO.transform.SetParent(r.transform, false);
             outlineGO.transform.localScale = Vector3.one * outlineShellScale;
 
@@ -161,48 +201,116 @@ public class Highlightable : MonoBehaviour
                 : mf.sharedMesh;
 
             var mrOutline = outlineGO.AddComponent<MeshRenderer>();
-            mrOutline.material = new Material(outlineMaterial); // אינסטנס פר Renderer
-            mrOutline.material.renderQueue =
-                (int)UnityEngine.Rendering.RenderQueue.Transparent + 10; // ~3010
-
+            if (outlineMaterial != null)
+            {
+                mrOutline.material = new Material(outlineMaterial);
+                mrOutline.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 10;
+            }
             mrOutline.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             mrOutline.receiveShadows = false;
             mrOutline.allowOcclusionWhenDynamic = false;
 
             outlineGO.SetActive(false);
-
             _clones.Add(new Pair { depth = depthGO, outline = outlineGO });
         }
+
+        // 2) SkinnedMeshRenderer (אם יש)
+        var skinned = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        for (int i = 0; i < skinned.Length; i++)
+        {
+            var src = skinned[i];
+            if (!src || !src.sharedMesh) continue;
+
+            GameObject depthGO = null;
+            if (_depthOnlyMat != null)
+            {
+                depthGO = new GameObject(src.gameObject.name + ".__DepthOnly");
+                depthGO.layer = src.gameObject.layer;
+                depthGO.transform.SetParent(src.transform, false);
+
+                // DepthOnly אפשר גם כ-Skinned כדי לשמר עצמות
+                var sDepth = depthGO.AddComponent<SkinnedMeshRenderer>();
+                sDepth.sharedMesh  = src.sharedMesh;
+                sDepth.bones       = src.bones;
+                sDepth.rootBone    = src.rootBone;
+                sDepth.sharedMaterial = _depthOnlyMat;
+                sDepth.updateWhenOffscreen = true;
+                sDepth.shadowCastingMode   = UnityEngine.Rendering.ShadowCastingMode.Off;
+                sDepth.receiveShadows      = false;
+                sDepth.allowOcclusionWhenDynamic = false;
+
+                depthGO.SetActive(false);
+            }
+
+            var outlineGO = new GameObject(src.gameObject.name + ".__Outline");
+            outlineGO.layer = src.gameObject.layer;
+            outlineGO.transform.SetParent(src.transform, false);
+            outlineGO.transform.localScale = Vector3.one * outlineShellScale;
+
+            var sOutline = outlineGO.AddComponent<SkinnedMeshRenderer>();
+            // שים לב: על Skinned לא נוכל להחליק נורמלים בלי Mesh קריא; נשתמש במקור ישר
+            sOutline.sharedMesh = (smoothOutlineNormals && src.sharedMesh.isReadable)
+                ? GetSmoothMesh180(src.sharedMesh, smoothPositionEpsilon)
+                : src.sharedMesh;
+
+            if (outlineMaterial != null)
+            {
+                sOutline.material = new Material(outlineMaterial);
+                sOutline.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 10;
+            }
+
+            sOutline.bones     = src.bones;
+            sOutline.rootBone  = src.rootBone;
+            sOutline.updateWhenOffscreen = true;
+            sOutline.shadowCastingMode   = UnityEngine.Rendering.ShadowCastingMode.Off;
+            sOutline.receiveShadows      = false;
+            sOutline.allowOcclusionWhenDynamic = false;
+
+            outlineGO.SetActive(false);
+            _clones.Add(new Pair { depth = depthGO, outline = outlineGO });
+        }
+
         _built = true;
     }
 
-    // === רשת חלקה 180°: מאחד נורמלים לפי מיקום קודקוד (מתעלם מתפרי UV) ===
     static Mesh GetSmoothMesh180(Mesh src, float posEps)
     {
         if (!src) return null;
+
+        // אם mesh לא קריא ב-Build – אל תנסה להעתיק/לקרוא אותו
+        if (!src.isReadable)
+        {
+            // נשתמש ישירות במקור, בלי החלקת נורמלים, ונזהיר פעם אחת בלוג
+            #if UNITY_EDITOR
+            Debug.LogWarning($"[Highlightable] Mesh '{src.name}' is not Read/Write enabled. " +
+                            "Outline will work but without 180° smoothing. " +
+                            "To enable: Select the model asset → Model tab → Read/Write = Enabled → Apply.");
+            #endif
+            return src;
+        }
+
         if (_smoothMeshCache.TryGetValue(src, out var cached)) return cached;
 
         var dup = Object.Instantiate(src);
+
         var verts = dup.vertices;
         var tris  = dup.triangles;
 
-        var accum = new Vector3[verts.Length];   // סכום נורמלים לכל קודקוד
+        var accum  = new Vector3[verts.Length];
         var counts = new int[verts.Length];
 
-        // חישוב נורמל משולש והוספה לקודקודיו (משוקלל לפי שטח)
         for (int t = 0; t < tris.Length; t += 3)
         {
             int i0 = tris[t], i1 = tris[t+1], i2 = tris[t+2];
             Vector3 v0 = verts[i0], v1 = verts[i1], v2 = verts[i2];
             Vector3 n = Vector3.Cross(v1 - v0, v2 - v0);
-            float area2 = n.magnitude; // פרופורציונלי לשטח
-            if (area2 > 1e-12f) n /= area2;      // נורמליזציה למניעת גדילה מוגזמת
+            float area2 = n.magnitude;
+            if (area2 > 1e-12f) n /= area2;
             accum[i0] += n; counts[i0]++;
             accum[i1] += n; counts[i1]++;
             accum[i2] += n; counts[i2]++;
         }
 
-        // קיבוץ לפי מיקום (כדי לאחד תפרי UV / דופליקטים)
         var groups = new Dictionary<Vector3Int, List<int>>(verts.Length);
         float inv = 1f / Mathf.Max(1e-9f, posEps);
 
@@ -223,7 +331,6 @@ public class Highlightable : MonoBehaviour
         }
 
         var newNormals = new Vector3[verts.Length];
-
         foreach (var kv in groups)
         {
             var idxs = kv.Value;
@@ -234,9 +341,6 @@ public class Highlightable : MonoBehaviour
         }
 
         dup.normals = newNormals;
-        // טנג'נטים לא נחוצים לאוטליין; אם צריך:
-        // try { dup.RecalculateTangents(); } catch {}
-
         _smoothMeshCache[src] = dup;
         return dup;
     }

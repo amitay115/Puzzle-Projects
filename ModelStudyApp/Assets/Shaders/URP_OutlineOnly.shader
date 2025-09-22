@@ -9,7 +9,7 @@ Shader "Custom/URP_OutlineOnly"
     }
     SubShader
     {
-        Tags{ "RenderType"="Transparent" "Queue"="Transparent+10" }
+        Tags{ "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent+10" }
 
         Pass
         {
