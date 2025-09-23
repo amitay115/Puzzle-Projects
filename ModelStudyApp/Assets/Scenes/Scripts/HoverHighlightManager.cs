@@ -36,36 +36,42 @@ public class HoverHighlightManager : MonoBehaviour
         // 1) עדכון Hover
         UpdateHover();
 
-        // 2) בחירה בעכבר (לחיצה)
+        // 2) בחירה בעכבר
         bool pointerOnUI = blockWhenPointerOverUI &&
-                           EventSystem.current != null &&
-                           EventSystem.current.IsPointerOverGameObject();
+                        EventSystem.current != null &&
+                        EventSystem.current.IsPointerOverGameObject();
 
         if (!pointerOnUI && Input.GetMouseButtonDown(selectMouseButton))
         {
-            // בחר את מה שמתחת לסמן (אם יש)
-            Select(_hover);
+            if (_hover != null)
+            {
+                Select(_hover);
+            }
+            else
+            {
+                // קליק על הרקע: נקה גם בחירה וגם כל hover שנתקעו
+                ClearSelection();
+                Highlightable.ClearAllHovers();
+                Highlightable.ClearAllOutlinesAndFlags(); // ביטחון
+            }
         }
 
         // 3) ניקוי בחירה (Esc)
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ClearSelection();
+            Highlightable.ClearAllHovers();
+            Highlightable.ClearAllOutlinesAndFlags();
         }
     }
 
     void UpdateHover()
     {
         Highlightable found = RaycastForHighlightable();
-
         if (_hover == found) return;
 
-        // כבה hover קודם
         if (_hover) SafeSetHover(_hover, false);
-
         _hover = found;
-
-        // הדלק hover חדש (לא אם הוא כבר נבחר? לרוב כן – משאירים hover גם על נבחר)
         if (_hover) SafeSetHover(_hover, true);
     }
 
