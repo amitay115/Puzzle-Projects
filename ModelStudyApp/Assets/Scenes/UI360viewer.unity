@@ -1289,6 +1289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474deca90a8754123b23ff95675cd90d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  modelMenuPanel: {fileID: 1128177705}
   manager: {fileID: 963194231}
   modelRoot: {fileID: 523228052014116960}
   orbitRig: {fileID: 963194230}
@@ -1296,9 +1297,9 @@ MonoBehaviour:
   btnFull: {fileID: 1493973109}
   btnTransparent: {fileID: 670129758}
   btnIsolate: {fileID: 1158948873}
+  transparentAlpha: 0.205
   keepOutlineOnTransparent: 1
   writeDepthOnTransparent: 1
-  transparentAlpha: 0.205
   outlineChildSuffix: .__Outline
   outlineShaderNameContains: UnlitOutlineURP
   snapAboveFloor: 1
@@ -10753,6 +10754,7 @@ MonoBehaviour:
   - {fileID: 4581037830087459106}
   - {fileID: 8756894964000164455}
   - {fileID: 6855778206559717522}
+  - {fileID: 211090832110362643}
 --- !u!65 &8624069564011962364
 BoxCollider:
   m_ObjectHideFlags: 0
